@@ -1,19 +1,82 @@
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
-CMakeUserPresets.json
+# ==========================================
+# Общие правила для ОС и редакторов
+# ==========================================
+.DS_Store
+Thumbs.db
+*.bak
+*.swp
+*~
 
-# CLion
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#cmake-build-*
+# ==========================================
+# Visual Studio (включая VS 2026)
+# ==========================================
+.vs/
+Build/
+Out/
+x64/
+x86/
+ARM/
+ARM64/
+*.user
+*.suo
+*.sln.docstates
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.VC.opendb
+
+# ==========================================
+# CMake (генерация и сборка)
+# ==========================================
+CMakeCache.txt
+CMakeFiles/
+CMakeSettings.json
+CMakeUserPresets.json
+cmake-build-*/
+_deps/
+*.cmake
+!CMakeLists.txt
+
+# ==========================================
+# Компиляция C++ (Объектные файлы и бинарники)
+# ==========================================
+*.obj
+*.o
+*.pdb
+*.ilk
+*.exe
+*.dll
+*.lib
+*.so
+*.a
+*.out
+*.app
+
+# ==========================================
+# Android Studio / Gradle (папка корень/android)
+# ==========================================
+android/.gradle/
+android/local.properties
+android/.local.properties
+android/.idea/caches/
+android/.idea/libraries/
+android/.idea/modules.xml
+android/.idea/workspace.xml
+android/.idea/nav/
+android/.idea/assetWizardSettings.xml
+android/*.iml
+android/.android/
+
+# Вывод сборки Android (APK, AAR, папки build)
+android/build/
+**/android/build/
+*.apk
+*.aar
+*.ap_
+*.der
+
+# Кэш и логи Android инструментов
+android/.cxx/
+android/.externalNativeBuild/
+android/captures/
+*.hprof
