@@ -8,14 +8,20 @@ bool BaseWidget::ProcessEvent(const ScreenEvent& event)
 		if (tec->ProcessEvent(event))
 			return 1;
 	}
+	return 0;
 }
 
-void BaseWidget::Render(RenderManager& renderer)
+void BaseWidget::Render(RenderManager& renderer, const PrimitivePoint& Position)
 {
 	for (auto& tec : Children)
 	{
-		tec->Render(renderer);
+		tec->Render(renderer, Position);
 	}
+}
+
+PrimitivePoint BaseWidget::GetSize()
+{
+	return PrimitivePoint(Size);
 }
 
 BaseWidget::~BaseWidget()

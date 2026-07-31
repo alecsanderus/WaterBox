@@ -2,6 +2,7 @@
 #include <SDL3/SDL.h>
 #include "WaterBox.h"
 #include "ButtonWidget.h"
+#include "HorizontalBoxWidget.h"
 #include "ScreenPositionContainers.h"
 
 
@@ -55,8 +56,12 @@ bool RenderManager::Init()
     UpdateScreenInfo();
 
     NeedToDestroyWindow = true;
+
+
+
     ButtonWidget *but = new ButtonWidget;
     MainWidget.Children.push_back(but);
+
     return true;
 }
 
@@ -65,7 +70,8 @@ bool RenderManager::Render()
     // Очистка экрана синим цветом (R, G, B, A)
     SDL_SetRenderDrawColor(renderer, 100, 100, 255, 255);
     SDL_RenderClear(renderer);    
-    MainWidget.Render(*this);
+
+    MainWidget.Render(*this, {0,0});
 
     SDL_RenderPresent(renderer);
 
@@ -107,10 +113,16 @@ bool RenderManager::ProcessEvent(const SDL_Event& event)
     return true;
 }
 
-void RenderManager::DrawRect(ScreenRect Rect)
+
+void RenderManager::DrawRect(PrimitiveRect Rect)
 {
-    auto [pos,siz] = Rect.GetNormalizedRect();
-    SDL_FRect rect{pos.first, pos.second, siz.first, siz.second };
+    SDL_FRect rect{
+        static_cast<float>(Rect.pos.x),
+        static_cast<float>(Rect.pos.y),
+        static_cast<float>(Rect.size.x),
+        static_cast<float>(Rect.size.y)
+    };
+
 
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderFillRect(renderer, &rect);
@@ -125,8 +137,8 @@ void RenderManager::UpdateScreenInfo()
 
     auto ScreenInfo = GetScreenInfo();
 
-    ScreenInfo->ScreenSizeX = static_cast<float>(w);
-    ScreenInfo->ScreenSizeY = static_cast<float>(h);
+    ScreenInfo->ScreenSizeX = w;
+    ScreenInfo->ScreenSizeY = h;
 }
 
 

@@ -22,14 +22,21 @@ struct ScreenEvent
 	ScreenEventType Type;
 };
 
+struct WidgetSize
+{	
+	WidgetSize(int x, int y) : SizeX(x), MaxSizeX(x), SizeY(y), MaxSizeY(y) {};
+	int SizeX, SizeY;
+	int MaxSizeX, MaxSizeY;
+};
+
 
 class RenderManager
 {
 
 protected:
 
-	class SDL_Window* window = nullptr;
-	class SDL_Renderer* renderer = nullptr;
+	struct SDL_Window* window = nullptr;
+	struct SDL_Renderer* renderer = nullptr;
 	bool NeedToDestroyWindow = false;
 	void UpdateScreenInfo();
 
@@ -49,5 +56,5 @@ public:
 	bool ProcessEvent(const SDL_Event& event);
 	BaseWidget MainWidget;
 
-	void DrawRect(struct ScreenRect Rect);
+	void DrawRect(struct PrimitiveRect Rect);
 };

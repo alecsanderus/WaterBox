@@ -11,7 +11,7 @@ int GameMain();
 int main(int argc, char* argv[]) {
 
 #ifdef _WIN32
-    SetUnhandledExceptionFilter(UnhandledExceptionFilter);
+    SetUnhandledExceptionFilter(UnhandledExceptionFilterPro);
     _set_se_translator(TranslateException);
 #endif
 

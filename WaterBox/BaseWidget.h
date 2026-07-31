@@ -4,13 +4,16 @@
 
 class RenderManager;
 struct ScreenEvent;
+struct WidgetSize;
 
 class BaseWidget
 {
 public:
 
     virtual bool ProcessEvent(const ScreenEvent& event);
-    virtual void Render(RenderManager& renderer);
+    virtual void Render(RenderManager& renderer, const PrimitivePoint & Position);
+    virtual PrimitivePoint GetSize();
+
     virtual ~BaseWidget();
 
     std::vector <BaseWidget*> Children;

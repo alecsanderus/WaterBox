@@ -5,6 +5,11 @@ file(GLOB_RECURSE WATERBOX_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
 )
 
+if(MSVC)
+    string(REPLACE "/EHsc" "/EHa" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    # На всякий случай убираем и /EHs, если он где-то проскочил
+    string(REPLACE "/EHs" "/EHa" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+endif()
 
 # Цель 1: С консолью
 add_executable(WaterBoxConsole ${WATERBOX_SOURCES})

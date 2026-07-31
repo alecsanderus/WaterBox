@@ -60,22 +60,28 @@ std::string GetStackTrace() {
     SymInitialize(process, NULL, TRUE);
 
     SYMBOL_INFO* symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256, 1);
-    symbol->MaxNameLen = 255;
-    symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+    if (symbol)
+    {
+        symbol->MaxNameLen = 255;
+        symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
 
-    for (WORD i = 0; i < frames; i++) {
-        if (SymFromAddr(process, (DWORD64)stack[i], 0, symbol)) {
-            ss << "  [" << i << "] " << symbol->Name
-                << " (0x" << std::hex << std::uppercase << symbol->Address << ")\n";
+        for (WORD i = 0; i < frames; i++) {
+            if (SymFromAddr(process, (DWORD64)stack[i], 0, symbol)) {
+                ss << "  [" << i << "] " << symbol->Name
+                    << " (0x" << std::hex << std::uppercase << symbol->Address << ")\n";
+            }
         }
-    }
 
-    free(symbol);
+        free(symbol);
+    }
+    else
+        ss << "Can not get Stack Trace";
+
     SymCleanup(process);
     return ss.str();
 }
 
-LONG WINAPI UnhandledExceptionFilter(EXCEPTION_POINTERS* ep) {
+LONG WINAPI UnhandledExceptionFilterPro(EXCEPTION_POINTERS* ep) {
     std::string errorMsg = "=== UNHANDLED EXCEPTION ===\n";
     DWORD code = ep->ExceptionRecord->ExceptionCode;
 
