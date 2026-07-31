@@ -54,17 +54,20 @@ int GameMain()
             if (event.type == SDL_EVENT_QUIT) {
                 Running = false;
             }
-            if (event.type == SDL_EVENT_KEY_DOWN) {
-                if (event.key.key == SDLK_ESCAPE) {
-                    Running = false;
+            else
+                if (event.type == SDL_EVENT_KEY_DOWN) {
+                    if (event.key.key == SDLK_ESCAPE) {
+                        Running = false;
+                    }
                 }
-            }
+                else
+                    MainRenderManager.ProcessEvent(event);
         }
 
         if (!MainRenderManager.Render())
             Running = false;
 
-        auto err = SDL_GetError();
+       // auto err = SDL_GetError();
        // if (err != "")
        //     LOG_ERROR(err);
         //if (const char* err = SDL_GetError(); err && *err)
@@ -73,6 +76,10 @@ int GameMain()
         //}
     }
 
+    if (const char* err = SDL_GetError(); err && *err)
+    {
+        LOG_ERROR(err);
+    }
 
     MainRenderManager.Destroy();
     LOG_INFO("Exit");

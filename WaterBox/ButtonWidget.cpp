@@ -5,5 +5,5 @@ void ButtonWidget::Render(RenderManager& renderer)
 {
 	BaseWidget::Render(renderer);
 
-	renderer.DrawRect();
+	renderer.DrawRect(MyRect);
 }

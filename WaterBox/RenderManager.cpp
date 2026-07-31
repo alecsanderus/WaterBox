@@ -2,7 +2,7 @@
 #include <SDL3/SDL.h>
 #include "WaterBox.h"
 #include "ButtonWidget.h"
-
+#include "ScreenPositionContainers.h"
 
 
 RenderManager::RenderManager()
@@ -52,6 +52,8 @@ bool RenderManager::Init()
 
     LOG_INFO ("Window created");
 
+    UpdateScreenInfo();
+
     NeedToDestroyWindow = true;
     ButtonWidget *but = new ButtonWidget;
     MainWidget.Children.push_back(but);
@@ -80,13 +82,51 @@ void RenderManager::Destroy()
     }
 }
 
-void RenderManager::DrawRect()
+bool RenderManager::ProcessEvent(const SDL_Event& event)
 {
-    SDL_FRect rect{ 100, 50, 200, 40 };
+    switch (event.type)
+    {
+
+    case SDL_EVENT_WINDOW_RESIZED:
+        UpdateScreenInfo();
+        break;
+
+    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+        UpdateScreenInfo();
+        break;
+
+    case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED:
+        UpdateScreenInfo();
+        break;
+
+    default:
+        return false;
+        break;
+    }
+
+    return true;
+}
+
+void RenderManager::DrawRect(ScreenRect Rect)
+{
+    auto [pos,siz] = Rect.GetNormalizedRect();
+    SDL_FRect rect{pos.first, pos.second, siz.first, siz.second };
 
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
     SDL_RenderFillRect(renderer, &rect);
 }
 
+
+void RenderManager::UpdateScreenInfo()
+{
+    int w, h;
+
+    SDL_GetRenderOutputSize(renderer, &w, &h);
+
+    auto ScreenInfo = GetScreenInfo();
+
+    ScreenInfo->ScreenSizeX = static_cast<float>(w);
+    ScreenInfo->ScreenSizeY = static_cast<float>(h);
+}
 
 
