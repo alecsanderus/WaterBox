@@ -21,14 +21,5 @@ void BaseWidget::Render(RenderManager& renderer, const PrimitivePoint& Position)
 
 PrimitivePoint BaseWidget::GetSize()
 {
-	return PrimitivePoint(Size);
-}
-
-BaseWidget::~BaseWidget()
-{
-	for (auto& tec : Children)
-	{
-		delete tec;
-	}
-	Children.clear();
+	return PrimitivePoint(0,0);
 }

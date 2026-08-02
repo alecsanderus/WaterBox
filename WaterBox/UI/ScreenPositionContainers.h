@@ -16,7 +16,7 @@ struct PrimitivePoint
 	PrimitivePoint(int Nx, int Ny) : x(Nx), y(Ny) {};
 	PrimitivePoint() {};
     PrimitivePoint(std::pair <int, int> pair);
-
+	bool operator== (const PrimitivePoint&) const = default;
 
     friend PrimitivePoint operator+(const PrimitivePoint& a, const PrimitivePoint& b);
     friend PrimitivePoint operator+(const PrimitivePoint& a, const ScreenPoint& b);
@@ -28,6 +28,8 @@ struct PrimitiveRect
 {
 	PrimitivePoint pos;
 	PrimitivePoint size;
+
+	bool operator== (const PrimitiveRect&) const = default;
 
 	friend PrimitiveRect operator+(const PrimitiveRect& a, const PrimitivePoint& b);
 	friend PrimitiveRect operator-(const PrimitiveRect& a, const PrimitivePoint& b);
@@ -47,8 +49,9 @@ struct ScreenPoint
 
 	const static int DefaultResolutionX = 1000, DefaultResolutionY = 1000;
 
-	std::pair <int, int> GetNormalizedPoint() const;
+	PrimitivePoint GetNormalizedPoint() const;
 
+	bool operator== (const ScreenPoint&) const = default;
 
     friend ScreenPoint operator+(const ScreenPoint& a, const ScreenPoint& b);
 	friend ScreenPoint operator-(const ScreenPoint& a, const ScreenPoint& b);
@@ -62,7 +65,8 @@ struct ScreenRect
 	// Возвращает {X, Y, Width, Height}
 	PrimitiveRect GetNormalizedRect() const;
 
-	
+	bool operator== (const ScreenRect&) const = default;
+
     friend ScreenRect operator+(const ScreenRect& a, const ScreenPoint& b);
 	friend ScreenRect operator-(const ScreenRect& a, const ScreenPoint& b);
 	friend ScreenRect operator+(const ScreenRect& a, const ScreenRect& b);

@@ -14,11 +14,15 @@ endif()
 # Цель 1: С консолью
 add_executable(WaterBoxConsole ${WATERBOX_SOURCES})
 target_link_libraries(WaterBoxConsole PRIVATE SDL3::SDL3)
+target_include_directories(WaterBoxConsole PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
 target_compile_definitions (WaterBoxConsole PRIVATE ENABLE_CONSOLE)
 
 # Цель 2: Без консоли
 add_executable(WaterBox WIN32 ${WATERBOX_SOURCES})
 target_link_libraries(WaterBox PRIVATE SDL3::SDL3)
+target_include_directories(WaterBox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
 
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)

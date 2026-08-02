@@ -2,7 +2,7 @@
 #include "RenderManager.h"
 
 
-std::pair<int, int> ScreenPoint::GetNormalizedPoint() const
+PrimitivePoint ScreenPoint::GetNormalizedPoint() const
 {
 	const ScreenInfoStruct& ScreenInfo = *RenderManager::GetScreenInfo();
 

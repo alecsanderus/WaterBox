@@ -1,9 +1,8 @@
 #include "RenderManager.h"
 #include <SDL3/SDL.h>
 #include "WaterBox.h"
-#include "ButtonWidget.h"
-#include "HorizontalBoxWidget.h"
-#include "ScreenPositionContainers.h"
+#include "UI/MainUIWidget.h"
+#include "UI/ScreenPositionContainers.h"
 
 
 RenderManager::RenderManager()
@@ -57,10 +56,8 @@ bool RenderManager::Init()
 
     NeedToDestroyWindow = true;
 
-
-
-    ButtonWidget *but = new ButtonWidget;
-    MainWidget.Children.push_back(but);
+  
+    MainWidget.Init();
 
     return true;
 }
@@ -114,6 +111,11 @@ bool RenderManager::ProcessEvent(const SDL_Event& event)
 }
 
 
+void RenderManager::SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha)
+{
+    SDL_SetRenderDrawColor(renderer, r, g, b, alpha);
+}
+
 void RenderManager::DrawRect(PrimitiveRect Rect)
 {
     SDL_FRect rect{
@@ -122,9 +124,7 @@ void RenderManager::DrawRect(PrimitiveRect Rect)
         static_cast<float>(Rect.size.x),
         static_cast<float>(Rect.size.y)
     };
-
-
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+   
     SDL_RenderFillRect(renderer, &rect);
 }
 

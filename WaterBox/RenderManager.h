@@ -1,5 +1,5 @@
 #pragma once
-#include "BaseWidget.h"
+#include "UI/MainUIWidget.h"
 
 union SDL_Event;
 
@@ -54,7 +54,9 @@ public:
 	bool Render();
 	void Destroy();
 	bool ProcessEvent(const SDL_Event& event);
-	BaseWidget MainWidget;
 
+	MainUIWidget MainWidget;
+
+	void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255);
 	void DrawRect(struct PrimitiveRect Rect);
 };
