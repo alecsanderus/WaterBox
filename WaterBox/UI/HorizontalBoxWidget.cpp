@@ -6,7 +6,8 @@ void HorizontalBoxWidget::Render(RenderManager& renderer, const PrimitivePoint& 
 	for (auto& tec : Children)
 	{
 		tec->Render(renderer, PrimitivePoint(Position.x + Padding.x, Position.y));
-		Padding = Padding + tec->GetSize();
+		Padding.x += tec->GetSize().x;
+		Padding.y = std::max(Padding.y, tec->GetSize().y);
 	}
 	CachedSize = Padding;
 
@@ -22,7 +23,8 @@ PrimitivePoint HorizontalBoxWidget::GetSize()
 		CachedSize = { 0,0 };
 		for (auto& tec : Children)
 		{
-			CachedSize = CachedSize + tec->GetSize();
+			CachedSize.x += tec->GetSize().x;
+			CachedSize.y = std::max(CachedSize.y, tec->GetSize().y);
 		}
 		return CachedSize;
 	}

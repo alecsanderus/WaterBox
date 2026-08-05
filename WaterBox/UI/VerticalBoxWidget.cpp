@@ -6,7 +6,8 @@ void VerticalBoxWidget::Render(RenderManager& renderer, const PrimitivePoint& Po
 	for (auto& tec : Children)
 	{
 		tec->Render(renderer, PrimitivePoint(Position.x, Position.y + Padding.y));
-		Padding = Padding + tec->GetSize();
+		Padding.y += tec->GetSize().y;
+		Padding.x = std::max(Padding.x, tec->GetSize().x);
 	}
 	CachedSize = Padding;
 
@@ -22,7 +23,8 @@ PrimitivePoint VerticalBoxWidget::GetSize()
 		CachedSize = { 0,0 };
 		for (auto& tec : Children)
 		{
-			CachedSize = CachedSize + tec->GetSize();
+			CachedSize.y += tec->GetSize().y;
+			CachedSize.x = std::max(CachedSize.x, tec->GetSize().x);
 		}
 		return CachedSize;
 	}

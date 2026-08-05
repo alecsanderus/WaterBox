@@ -9,24 +9,30 @@ struct ScreenInfoStruct
 	int ScreenSizeY = 1080;
 };
 
-enum class ScreenEventType
-{
-	RMB,
-	LMB,
-	MMB
-};
+
 
 
 struct ScreenEvent
 {
-	ScreenEventType Type;
-};
+	enum class ScreenEventButtonType : uint8_t
+	{
+		NO,
+		RMB,
+		LMB,
+		MMB,
+		FINGER
+	};	
 
-struct WidgetSize
-{	
-	WidgetSize(int x, int y) : SizeX(x), MaxSizeX(x), SizeY(y), MaxSizeY(y) {};
-	int SizeX, SizeY;
-	int MaxSizeX, MaxSizeY;
+	enum class ScreenEventType : uint8_t
+	{
+		DOWN,
+		UP,
+		MOVE
+	};
+
+	ScreenEventButtonType ButtonType = ScreenEventButtonType::NO;
+	ScreenEventType Type;
+	PrimitivePoint Point;
 };
 
 

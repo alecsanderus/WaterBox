@@ -210,3 +210,12 @@ ScreenRect operator-(const ScreenRect& a, const ScreenRect& b)
 	return ans;
 
 }
+
+bool PrimitiveRect::Contains(const PrimitivePoint& point) const
+{
+	if (pos.x <= point.x && pos.y <= point.y &&
+		pos.x + size.x > point.x && pos.y + size.y > point.y)
+		return true;
+	else
+		return false;
+}

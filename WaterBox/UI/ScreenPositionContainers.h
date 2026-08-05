@@ -35,6 +35,8 @@ struct PrimitiveRect
 	friend PrimitiveRect operator-(const PrimitiveRect& a, const PrimitivePoint& b);
 	friend PrimitiveRect operator+(const PrimitiveRect& a, const PrimitiveRect& b);
 	friend PrimitiveRect operator-(const PrimitiveRect& a, const PrimitiveRect& b);
+
+	bool Contains(const PrimitivePoint& point) const;
 };
 
 

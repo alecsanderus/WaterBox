@@ -85,23 +85,99 @@ void RenderManager::Destroy()
     }
 }
 
-bool RenderManager::ProcessEvent(const SDL_Event& event)
+bool RenderManager::ProcessEvent(const SDL_Event& EventSDL)
 {
-    switch (event.type)
+    switch (EventSDL.type)
     {
 
     case SDL_EVENT_WINDOW_RESIZED:
+    {
         UpdateScreenInfo();
         break;
+    }
 
     case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+    {
         UpdateScreenInfo();
         break;
+    }
 
     case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED:
+    {
         UpdateScreenInfo();
+    
+        break;
+    }
+
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    {
+        ScreenEvent Event;
+        Event.Point.x = static_cast <int> (EventSDL.button.x);
+        Event.Point.y = static_cast <int> (EventSDL.button.y);
+        Event.Type = ScreenEvent::ScreenEventType::DOWN;
+        switch (EventSDL.button.button)
+        {
+        case SDL_BUTTON_LEFT:
+            Event.ButtonType = ScreenEvent::ScreenEventButtonType::LMB;
+            break;
+
+        case SDL_BUTTON_RIGHT:
+            Event.ButtonType = ScreenEvent::ScreenEventButtonType::RMB;
+            break;
+
+        case SDL_BUTTON_MIDDLE:
+            Event.ButtonType = ScreenEvent::ScreenEventButtonType::MMB;
+            break;
+        }
+
+        MainWidget.ProcessEvent(Event);
+        break;
+    }
+     
+
+    case SDL_EVENT_MOUSE_BUTTON_UP:
+    {
+        ScreenEvent Event;
+        Event.Point.x = static_cast <int> (EventSDL.button.x);
+        Event.Point.y = static_cast <int> (EventSDL.button.y);
+        Event.Type = ScreenEvent::ScreenEventType::UP;
+        switch (EventSDL.button.button)
+        {
+        case SDL_BUTTON_LEFT:
+            Event.ButtonType = ScreenEvent::ScreenEventButtonType::LMB;
+            break;
+
+        case SDL_BUTTON_RIGHT:
+            Event.ButtonType = ScreenEvent::ScreenEventButtonType::RMB;
+            break;
+
+        case SDL_BUTTON_MIDDLE:
+            Event.ButtonType = ScreenEvent::ScreenEventButtonType::MMB;
+            break;
+        }
+
+        MainWidget.ProcessEvent(Event);
+        break;
+    }
+
+    case SDL_EVENT_MOUSE_MOTION:
+    {
+        ScreenEvent Event;
+        Event.Point.x = static_cast <int> (EventSDL.motion.x);
+        Event.Point.y = static_cast <int> (EventSDL.motion.y);
+        Event.Type = ScreenEvent::ScreenEventType::MOVE;
+
+        MainWidget.ProcessEvent(Event);
+        break;
+    }
+
+    case SDL_EVENT_KEY_DOWN:
+        // нажата клавиша
         break;
 
+    case SDL_EVENT_KEY_UP:
+        // отпущена клавиша
+        break;
     default:
         return false;
         break;
