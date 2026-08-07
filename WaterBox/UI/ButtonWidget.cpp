@@ -8,7 +8,7 @@ void ButtonWidget::Render(RenderManager& renderer, const PrimitivePoint & Positi
 	auto Size = MySize.GetNormalizedPoint();
 	PrimitiveRect rect{Position, Size};
 
-	renderer.SetColor(r, 100, 100);
+	renderer.SetColor(255, 100, 100);
 	renderer.DrawRect(rect);
 
 	MyTriggerZone = rect;
@@ -22,12 +22,29 @@ PrimitivePoint ButtonWidget::GetSize()
 
 bool ButtonWidget::ProcessEvent(const ScreenEvent& event)
 {
-	if (event.Type != ScreenEvent::ScreenEventType::UP || event.ButtonType != ScreenEvent::ScreenEventButtonType::LMB)
+	if (event.Type != ScreenEventType::UP || event.ButtonType != ScreenEventButtonType::LMB)
 		return false;
 
 	if (!MyTriggerZone.Contains(event.Point))
 		return false;
-	r = ~r;
 
+
+	return Callback ();
+}
+
+void ButtonWidget::SetOnClick(ClickCallback callback)
+{
+	OnClick = callback;
+}
+
+bool ButtonWidget::Callback()
+{
+	if (!OnClick)
+		return false;
+	
+	OnClick();
 	return true;
 }
+
+
+

@@ -1,5 +1,6 @@
 #include "GameViewWidget.h"
 #include "RenderManager.h"
+#include "GameSimulation.h"
 
 GameViewWidget::GameViewWidget()
 {}

@@ -25,28 +25,15 @@ void MainUIWidget::Init()
 	GridBox = static_cast  <GridBoxWidget*> (HorizontalBox->Children[2].get());
 
 
-	
-
-	for (size_t i = 0; i < 10; i++)
-	{
-		GridBox->Children.emplace_back(std::make_unique <ButtonWidget>());
-	}
-
 }
 
 void MainUIWidget::Render(RenderManager& renderer, const PrimitivePoint& Position)
 {
-	int siz= 0;
 	
-	for (int tec = 0; tec < HorizontalBox->Children.size(); tec++)
-	{
-		if (HorizontalBox->Children[tec].get() != GridBox)
-			siz += HorizontalBox->Children[tec]->GetSize().x;
-	}
-
 	auto ScreenInfo = RenderManager::GetScreenInfo();
 
-	GridBox->MaxPossibleSize = ScreenPoint{ .x = ScreenInfo->ScreenSizeX - siz, .y = ScreenInfo->ScreenSizeY, .IsVirtualCoordinates = false };
+	GridBox->MaxPossibleSize = ScreenPoint{ .x = ScreenInfo->ScreenSizeX - HorizontalBox->GetSize().x + GridBox->GetSize().x,
+		.y = ScreenInfo->ScreenSizeY, .IsVirtualCoordinates = false};
 
 	BaseWidget::Render(renderer, Position);
 }

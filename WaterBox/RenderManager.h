@@ -10,26 +10,24 @@ struct ScreenInfoStruct
 };
 
 
+enum class ScreenEventButtonType : uint8_t
+{
+	NO,
+	RMB,
+	LMB,
+	MMB,
+	FINGER
+};
 
+enum class ScreenEventType : uint8_t
+{
+	DOWN,
+	UP,
+	MOVE
+};
 
 struct ScreenEvent
 {
-	enum class ScreenEventButtonType : uint8_t
-	{
-		NO,
-		RMB,
-		LMB,
-		MMB,
-		FINGER
-	};	
-
-	enum class ScreenEventType : uint8_t
-	{
-		DOWN,
-		UP,
-		MOVE
-	};
-
 	ScreenEventButtonType ButtonType = ScreenEventButtonType::NO;
 	ScreenEventType Type;
 	PrimitivePoint Point;

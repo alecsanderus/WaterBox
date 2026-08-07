@@ -114,19 +114,19 @@ bool RenderManager::ProcessEvent(const SDL_Event& EventSDL)
         ScreenEvent Event;
         Event.Point.x = static_cast <int> (EventSDL.button.x);
         Event.Point.y = static_cast <int> (EventSDL.button.y);
-        Event.Type = ScreenEvent::ScreenEventType::DOWN;
+        Event.Type = ScreenEventType::DOWN;
         switch (EventSDL.button.button)
         {
         case SDL_BUTTON_LEFT:
-            Event.ButtonType = ScreenEvent::ScreenEventButtonType::LMB;
+            Event.ButtonType = ScreenEventButtonType::LMB;
             break;
 
         case SDL_BUTTON_RIGHT:
-            Event.ButtonType = ScreenEvent::ScreenEventButtonType::RMB;
+            Event.ButtonType = ScreenEventButtonType::RMB;
             break;
 
         case SDL_BUTTON_MIDDLE:
-            Event.ButtonType = ScreenEvent::ScreenEventButtonType::MMB;
+            Event.ButtonType = ScreenEventButtonType::MMB;
             break;
         }
 
@@ -140,19 +140,19 @@ bool RenderManager::ProcessEvent(const SDL_Event& EventSDL)
         ScreenEvent Event;
         Event.Point.x = static_cast <int> (EventSDL.button.x);
         Event.Point.y = static_cast <int> (EventSDL.button.y);
-        Event.Type = ScreenEvent::ScreenEventType::UP;
+        Event.Type = ScreenEventType::UP;
         switch (EventSDL.button.button)
         {
         case SDL_BUTTON_LEFT:
-            Event.ButtonType = ScreenEvent::ScreenEventButtonType::LMB;
+            Event.ButtonType = ScreenEventButtonType::LMB;
             break;
 
         case SDL_BUTTON_RIGHT:
-            Event.ButtonType = ScreenEvent::ScreenEventButtonType::RMB;
+            Event.ButtonType = ScreenEventButtonType::RMB;
             break;
 
         case SDL_BUTTON_MIDDLE:
-            Event.ButtonType = ScreenEvent::ScreenEventButtonType::MMB;
+            Event.ButtonType = ScreenEventButtonType::MMB;
             break;
         }
 
@@ -165,7 +165,7 @@ bool RenderManager::ProcessEvent(const SDL_Event& EventSDL)
         ScreenEvent Event;
         Event.Point.x = static_cast <int> (EventSDL.motion.x);
         Event.Point.y = static_cast <int> (EventSDL.motion.y);
-        Event.Type = ScreenEvent::ScreenEventType::MOVE;
+        Event.Type = ScreenEventType::MOVE;
 
         MainWidget.ProcessEvent(Event);
         break;
