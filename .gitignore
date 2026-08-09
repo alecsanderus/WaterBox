@@ -89,3 +89,7 @@ android/.cxx/
 android/.externalNativeBuild/
 android/captures/
 *.hprof
+
+
+!third_party/
+!third_party/**
