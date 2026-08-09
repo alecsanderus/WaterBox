@@ -38,6 +38,7 @@ cmake-build-*/
 !Find*.cmake
 !*Config.cmake
 !*-config.cmake
+!third_party/**/*.cmake 
 
 # ==========================================
 # Компиляция C++ (Объектные файлы и бинарники)
