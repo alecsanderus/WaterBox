@@ -1,6 +1,7 @@
 #include "GameViewWidget.h"
 #include "RenderManager.h"
-#include "GameSimulation.h"
+#include "Game/GameSimulation.h"
+#include "SDL3/SDL.h"
 
 GameViewWidget::GameViewWidget()
 {}
