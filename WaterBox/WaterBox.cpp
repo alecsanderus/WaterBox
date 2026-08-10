@@ -3,6 +3,7 @@
 #include <SDL3/SDL_main.h>
 #include "RenderManager.h" 
 #include "ExeptionHandlers.h"
+#include "Game/GameManager.h"
 
 
 
@@ -44,10 +45,15 @@ int GameMain()
 
     RenderManager MainRenderManager;
 
+    GameManager& MainGameManager = GameManager::GetGameManager();
+    MainGameManager.Init();
+
+
     if (!MainRenderManager.Init())
         Running = false;
 
     SDL_Event event;
+   
 
     while (Running) {
         while (SDL_PollEvent(&event)) {
@@ -63,6 +69,8 @@ int GameMain()
                 else
                     MainRenderManager.ProcessEvent(event);
         }
+
+        MainGameManager.Tick();
 
         if (!MainRenderManager.Render())
             Running = false;

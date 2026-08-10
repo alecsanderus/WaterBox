@@ -37,7 +37,7 @@ struct ScreenEvent
 class RenderManager
 {
 
-protected:
+private:
 
 	struct SDL_Window* window = nullptr;
 	struct SDL_Renderer* renderer = nullptr;
@@ -48,10 +48,12 @@ public:
 	RenderManager();
 	~RenderManager();
 
-	static ScreenInfoStruct* GetScreenInfo()
-	{
+	static ScreenInfoStruct* GetScreenInfo()	{
 		static ScreenInfoStruct ScreenInfo;
 		return &ScreenInfo;
+	}
+	struct SDL_Renderer* GetSDLRenderer(){
+		return renderer;
 	}
 
 	bool Init();

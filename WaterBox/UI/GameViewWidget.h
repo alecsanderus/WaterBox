@@ -6,18 +6,17 @@ class GameViewWidget : public BaseWidget
 public:
 	GameViewWidget();
 	virtual PrimitivePoint GetSize() override;
-
+	void UpdateTexture();
 
 	virtual void Render(RenderManager& renderer, const PrimitivePoint& Position) override;
-
+	virtual ~GameViewWidget();
 
 protected:
+	void CreateTexture(size_t X, size_t Y);
     struct SDL_Renderer* Renderer = nullptr;
     struct SDL_Texture* Texture = nullptr;
-
-    int Width;
-    int Height;
-
-    // Плоский массив пикселей.
+	   
     std::vector<uint32_t> Pixels;
+
+	size_t SizeX = 0, SizeY = 0;
 };
