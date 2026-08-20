@@ -22,11 +22,13 @@ PrimitivePoint ButtonWidget::GetSize()
 
 bool ButtonWidget::ProcessEvent(const ScreenEvent& event)
 {
-	if (event.Type != ScreenEventType::UP || event.ButtonType != ScreenEventButtonType::LMB)
-		return false;
-
 	if (!MyTriggerZone.Contains(event.Point))
 		return false;
+
+	if (event.Type != ScreenEventType::UP || event.ButtonType != ScreenEventButtonType::LMB)
+		return true;
+
+
 
 
 	return Callback ();

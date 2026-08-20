@@ -30,6 +30,10 @@ int main(int argc, char* argv[]) {
         OpenProgramDeathScreen(std::string("Fatal error (std::string): ") + e);
         return 1;
     }
+    catch (const char* e) {
+        OpenProgramDeathScreen(std::string("Fatal error (char*): ") + e);
+        return 1;
+    }
     catch (...) {
         OpenProgramDeathScreen("Fatal error: Unknown exception");
         return 1;
@@ -66,8 +70,8 @@ int GameMain()
                         Running = false;
                     }
                 }
-                else
-                    MainRenderManager.ProcessEvent(event);
+                
+            MainRenderManager.ProcessEvent(event);
         }
 
         MainGameManager.Tick();

@@ -3,6 +3,8 @@
 #include "WaterBox.h"
 #include "UI/MainUIWidget.h"
 #include "UI/ScreenPositionContainers.h"
+#include "Game/SimulationTool.h"
+#include "Game/GameManager.h"
 
 
 RenderManager::RenderManager()
@@ -12,6 +14,13 @@ RenderManager::~RenderManager()
 {
     Destroy();
 }
+
+std::pair<BaseWidget*, EventFocusType>& RenderManager::GetLockEventState()
+{
+    static std::pair<BaseWidget*, EventFocusType> state (nullptr, EventFocusType::NO);
+
+    return state;
+} 
 
 bool RenderManager::Init()
 {
@@ -172,11 +181,28 @@ bool RenderManager::ProcessEvent(const SDL_Event& EventSDL)
     }
 
     case SDL_EVENT_KEY_DOWN:
-        // нажата клавиша
-        break;
+    {
+        if (EventSDL.key.key == SDLK_F11)
+        {
+            bool FullScreen = SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN;
 
+            SDL_SetWindowFullscreen(window, !FullScreen);
+        }
+        else
+        {
+            auto Event = CreateSimulationKeyEvent(EventSDL);
+            Event.State = true;
+            GameManager::GetGameManager().GetSimulationTool().ProcessKeyEvent(Event);
+
+        }
+        break;
+    }
     case SDL_EVENT_KEY_UP:
-        // отпущена клавиша
+    {
+        auto Event = CreateSimulationKeyEvent(EventSDL);
+        Event.State = false;
+        GameManager::GetGameManager().GetSimulationTool().ProcessKeyEvent(Event);
+    }
         break;
     default:
         return false;
@@ -218,3 +244,49 @@ void RenderManager::UpdateScreenInfo()
 }
 
 
+SimulationKeyEvent RenderManager::CreateSimulationKeyEvent (const SDL_Event& sdlEvent)
+{
+    SimulationKeyEvent simEvent;
+
+  
+    simEvent.State = sdlEvent.key.down;
+
+    SDL_Keycode keycode = sdlEvent.key.key;
+
+    switch (keycode)
+    {
+    case SDLK_SPACE:
+        simEvent.Type = SimulationKeyEvent::SimulationKeyEventSymbol::SPACE;
+        break;
+
+    case SDLK_LSHIFT:
+    case SDLK_RSHIFT:
+        simEvent.Type = SimulationKeyEvent::SimulationKeyEventSymbol::SHIFT;
+        break;
+
+    case SDLK_LCTRL:
+    case SDLK_RCTRL:
+        simEvent.Type = SimulationKeyEvent::SimulationKeyEventSymbol::CONTROL;
+        break;
+
+    case SDLK_LALT:
+    case SDLK_RALT:
+        simEvent.Type = SimulationKeyEvent::SimulationKeyEventSymbol::ALT;
+        break;
+
+    default:
+        simEvent.Type = SimulationKeyEvent::SimulationKeyEventSymbol::SYMBOL;
+
+        if (keycode >= 32 && keycode <= 126)
+        {
+            simEvent.Symbol = static_cast<char>(keycode);
+        }
+        else
+        {
+            simEvent.Symbol = '\0';
+        }
+        break;
+    }
+
+    return simEvent;
+}

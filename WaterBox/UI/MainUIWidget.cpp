@@ -37,3 +37,32 @@ void MainUIWidget::Render(RenderManager& renderer, const PrimitivePoint& Positio
 
 	BaseWidget::Render(renderer, Position);
 }
+
+bool MainUIWidget::ProcessEvent(const ScreenEvent& event)
+{
+	auto [pointer, type] = RenderManager::GetLockEventState();
+	if (type != EventFocusType::NO && pointer != nullptr)
+	{
+		bool state = pointer->ProcessEvent(event);
+
+
+
+		if (type == EventFocusType::Lock_AutoUnlock && event.Type == ScreenEventType::UP)
+			type = EventFocusType::NO;
+
+		if (type == EventFocusType::NO)
+			pointer = nullptr;
+
+		return state;
+	}
+	else
+	{
+		for (auto& tec : Children)
+		{
+			if (tec->ProcessEvent(event))
+				return true;
+		}
+	}
+
+	return false;
+}

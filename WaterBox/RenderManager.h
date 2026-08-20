@@ -33,6 +33,15 @@ struct ScreenEvent
 	PrimitivePoint Point;
 };
 
+enum class EventFocusType : uint8_t
+{
+	NO,
+	OK,
+	Lock,
+	Lock_AutoUnlock,
+	Unlock
+};
+
 
 class RenderManager
 {
@@ -43,6 +52,8 @@ private:
 	struct SDL_Renderer* renderer = nullptr;
 	bool NeedToDestroyWindow = false;
 	void UpdateScreenInfo();
+	struct SimulationKeyEvent CreateSimulationKeyEvent(const SDL_Event& sdlEvent);
+
 
 public:
 	RenderManager();
@@ -52,6 +63,8 @@ public:
 		static ScreenInfoStruct ScreenInfo;
 		return &ScreenInfo;
 	}
+
+	static std::pair <BaseWidget*, EventFocusType>& GetLockEventState();
 	struct SDL_Renderer* GetSDLRenderer(){
 		return renderer;
 	}
@@ -62,6 +75,8 @@ public:
 	bool ProcessEvent(const SDL_Event& event);
 
 	MainUIWidget MainWidget;
+	BaseWidget* FocusedWidget = nullptr;
+	EventFocusType FocusedWidgetType = EventFocusType::NO;
 
 	void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255);
 	void DrawRect(struct PrimitiveRect Rect);

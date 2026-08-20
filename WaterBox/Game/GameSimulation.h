@@ -63,6 +63,8 @@ struct GameCell
 	bool Active = 0;
 };
 
+
+
 class GameSimulation
 {
 public:
@@ -72,7 +74,7 @@ public:
 	void SetGameFieldSize(size_t x, size_t y);
 
 private:	
-
+	friend class SimulationTool;
 	size_t GameSizeX = 100, GameSizeY = 100;
 	Vector2D <GameCell> GameField;
 };

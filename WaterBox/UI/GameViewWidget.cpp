@@ -3,6 +3,7 @@
 #include "Game/GameSimulation.h"
 #include "Game/GameManager.h"
 #include "SDL3/SDL.h"
+#include "Game/SimulationTool.h"
 
 GameViewWidget::GameViewWidget()
 {
@@ -18,8 +19,10 @@ GameViewWidget::GameViewWidget()
 
 PrimitivePoint GameViewWidget::GetSize()
 {
-	auto ScreenInfo = RenderManager::GetScreenInfo();	
-	return PrimitivePoint{ScreenInfo->ScreenSizeY, ScreenInfo->ScreenSizeY};
+    auto ScreenInfo = RenderManager::GetScreenInfo();
+    SizeX = SizeY = ScreenInfo->ScreenSizeY;
+
+	return PrimitivePoint{ ScreenInfo->ScreenSizeY, ScreenInfo->ScreenSizeY };
 }
 
 void GameViewWidget::UpdateTexture()
@@ -57,7 +60,7 @@ void GameViewWidget::UpdateTexture()
         Texture,
         nullptr,
         Pixels.data(),
-        SizeX * sizeof(uint32_t)
+        static_cast<int> (SizeX * sizeof(uint32_t))
     );
 }
 
@@ -71,10 +74,10 @@ void GameViewWidget::Render(RenderManager& renderer, const PrimitivePoint& Posit
     auto ScreenInfo = RenderManager::GetScreenInfo();
 
     SDL_FRect destination{
-    Position.x,
-    Position.y,
-    ScreenInfo->ScreenSizeY,
-    ScreenInfo->ScreenSizeY
+    static_cast <float> (Position.x),
+    static_cast <float> (Position.y),
+    static_cast <float> (ScreenInfo->ScreenSizeY),
+    static_cast <float> (ScreenInfo->ScreenSizeY)
     };
 
     SDL_RenderTexture(
@@ -83,6 +86,50 @@ void GameViewWidget::Render(RenderManager& renderer, const PrimitivePoint& Posit
         nullptr,
         &destination
     );
+}
+
+bool GameViewWidget::ProcessEvent(const ScreenEvent& event)
+{
+    auto& lock = RenderManager::GetLockEventState();
+
+    if (lock.first != this && (event.Point.x >= SizeX || event.Point.y >= SizeY))
+        return false;
+ 
+    auto& SimTool = GameManager::GetGameManager().GetSimulationTool();
+
+    SimulationMouseEvent Event;
+
+    auto MySize = GetSize();
+    auto GameSize = GameManager::GetGameManager().GetSimulation().GetGameFieldSize();
+
+    Event.X = event.Point.x * GameSize.first / MySize.x;
+    Event.Y = event.Point.y * GameSize.second / MySize.y;
+    Event.State = event.Type == ScreenEventType::DOWN;
+    switch (event.ButtonType)
+    {
+    case ScreenEventButtonType::NO:
+        Event.Type = SimulationMouseEvent::SimulationMouseEventButton::NO;
+        break;
+    case ScreenEventButtonType::FINGER:
+        Event.Type = SimulationMouseEvent::SimulationMouseEventButton::LMB;
+
+        break;
+    case ScreenEventButtonType::LMB:
+        Event.Type = SimulationMouseEvent::SimulationMouseEventButton::LMB;
+
+        break;
+    case ScreenEventButtonType::RMB:
+        Event.Type = SimulationMouseEvent::SimulationMouseEventButton::RMB;
+        break;
+    default:
+        break;
+    }
+
+  
+    lock  = { this, EventFocusType::Lock_AutoUnlock };
+
+    SimTool.ProcessMouseEvent(Event);
+    return true;
 }
 
 GameViewWidget::~GameViewWidget()
@@ -100,8 +147,8 @@ void GameViewWidget::CreateTexture(size_t X, size_t Y)
         Renderer,
         SDL_PIXELFORMAT_RGBA8888,
         SDL_TEXTUREACCESS_STREAMING,
-        X,
-        Y
+        static_cast <int> (X),
+        static_cast <int> (Y)
     );
 
     SDL_SetTextureScaleMode(

@@ -10,6 +10,8 @@ public:
 
 	virtual void Render(RenderManager& renderer, const PrimitivePoint& Position) override;
 	virtual ~GameViewWidget();
+	virtual bool ProcessEvent(const ScreenEvent& event) override;
+
 
 protected:
 	void CreateTexture(size_t X, size_t Y);

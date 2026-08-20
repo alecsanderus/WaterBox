@@ -1,12 +1,17 @@
 #include "GameManager.h"
 #include "GameSimulation.h"
 #include "GameConfigManager.h"
+#include "SimulationTool.h"
 
 void GameManager::Init()
 {
 	ConfigManager = std::make_unique <GameConfigManager>();
+
 	Simulation = std::make_unique <GameSimulation> ();
 	Simulation->SetGameFieldSize(100, 100);
+
+	SimTool = std::make_unique <SimulationTool>();
+	SimTool->SetSimulation(Simulation.get());
 }
 
 void GameManager::Tick()
@@ -23,4 +28,9 @@ GameManager& GameManager::GetGameManager()
 const GameSimulation& GameManager::GetSimulation()
 {
 	return *Simulation;
+}
+
+SimulationTool& GameManager::GetSimulationTool()
+{
+	return *SimTool;
 }
