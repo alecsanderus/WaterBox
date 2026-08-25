@@ -40,7 +40,7 @@ void MainUIWidget::Render(RenderManager& renderer, const PrimitivePoint& Positio
 
 bool MainUIWidget::ProcessEvent(const ScreenEvent& event)
 {
-	auto [pointer, type] = RenderManager::GetLockEventState();
+	auto& [pointer, type] = RenderManager::GetLockEventState();
 	if (type != EventFocusType::NO && pointer != nullptr)
 	{
 		bool state = pointer->ProcessEvent(event);

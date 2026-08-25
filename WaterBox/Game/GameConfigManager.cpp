@@ -37,17 +37,20 @@ const GameMaterial& GameConfigManager::GetMaterial(int ID)
 
 void GameConfigManager::LoadMaterials()
 {
-    const char* basePath = SDL_GetBasePath();
-    if (!basePath) {
-        LOG_ERROR("Cant get path to materials");
-        return;
-    }
+    //const char* basePath = SDL_GetBasePath();
+    //if (!basePath) {
+    //    LOG_ERROR("Cant get path to materials");
+    //    return;
+    //}
 
-    std::string fullPath = std::string(basePath) + MaterialsFileName;
+    //std::string fullPath = std::string(basePath) + MaterialsFileName;
 
 
-    size_t fileSize = 0;
-    char* fileData = (char*)SDL_LoadFile(fullPath.c_str(), &fileSize);
+    //size_t fileSize = 0;
+    //char* fileData = (char*)SDL_LoadFile(fullPath.c_str(), &fileSize);
+
+      size_t fileSize = 0;
+    char* fileData = (char*)SDL_LoadFile(MaterialsFileName.c_str(), &fileSize);
 
     if (!fileData) {
         std::string error = "Cant read file, SDL3 error: " + std::string (SDL_GetError());

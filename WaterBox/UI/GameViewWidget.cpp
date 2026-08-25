@@ -92,7 +92,7 @@ bool GameViewWidget::ProcessEvent(const ScreenEvent& event)
 {
     auto& lock = RenderManager::GetLockEventState();
 
-    if (lock.first != this && (event.Point.x >= SizeX || event.Point.y >= SizeY))
+    if (lock.first != this && ( event.Point.x >= SizeX || event.Point.y >= SizeY || event.ButtonType == ScreenEventButtonType::NO  ))
         return false;
  
     auto& SimTool = GameManager::GetGameManager().GetSimulationTool();
