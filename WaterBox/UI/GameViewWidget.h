@@ -21,4 +21,5 @@ protected:
     std::vector<uint32_t> Pixels;
 
 	size_t SizeX = 0, SizeY = 0;
+	int OldX = -1, OldY = -1;
 };

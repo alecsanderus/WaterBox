@@ -102,8 +102,8 @@ bool GameViewWidget::ProcessEvent(const ScreenEvent& event)
     auto MySize = GetSize();
     auto GameSize = GameManager::GetGameManager().GetSimulation().GetGameFieldSize();
 
-    Event.X = event.Point.x * GameSize.first / MySize.x;
-    Event.Y = event.Point.y * GameSize.second / MySize.y;
+    int PosX = Event.X = event.Point.x * GameSize.first / MySize.x;
+    int PosY = Event.Y = event.Point.y * GameSize.second / MySize.y;
     Event.State = event.Type == ScreenEventType::DOWN;
     switch (event.ButtonType)
     {
@@ -125,10 +125,57 @@ bool GameViewWidget::ProcessEvent(const ScreenEvent& event)
         break;
     }
 
+    PosX = std::max(PosX, 0);
+    PosY = std::max(PosY, 0);
+    PosX = std::min(PosX, (int)GameSize.first -1);
+    PosY = std::min(PosY, (int)GameSize.second -1);
   
     lock  = { this, EventFocusType::Lock_AutoUnlock };
 
-    SimTool.ProcessMouseEvent(Event);
+    if (OldX != -1 && OldY != -1)
+    {
+        int dx = std::abs(PosX - OldX);
+        int dy = std::abs(PosY - OldY);
+
+        int sx = (OldX < PosX) ? 1 : -1;
+        int sy = (OldY < PosY) ? 1 : -1;
+
+        int err = dx - dy;
+
+        while (true) {
+            Event.X = OldX;
+            Event.Y = OldY;
+            SimTool.ProcessMouseEvent(Event);
+
+            if (OldX == PosX && OldY == PosY) {
+                break;
+            }
+
+            int e2 = 2 * err;
+
+            if (e2 > -dy) {
+                err -= dy;
+                OldX += sx;
+            }
+
+            if (e2 < dx) {
+                err += dx;
+                OldY += sy;
+            }
+        }
+    }
+    else
+    {
+        SimTool.ProcessMouseEvent(Event);
+    }
+
+
+   
+
+
+    if (event.Type == ScreenEventType::UP) { OldX = -1; OldY = -1; }
+    else {OldX = PosX; OldY = PosY;}
+
     return true;
 }
 

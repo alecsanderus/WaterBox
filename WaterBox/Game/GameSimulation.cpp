@@ -10,22 +10,43 @@ PixelColor GetRandomColor(const GameMaterial& material)
     auto [minR, maxR] = std::minmax(material.MinColor.R, material.MaxColor.R);
     auto [minG, maxG] = std::minmax(material.MinColor.G, material.MaxColor.G);
     auto [minB, maxB] = std::minmax(material.MinColor.B, material.MaxColor.B);
+    
+    if (material.KeepColorProportions)
+    {     
+        std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+        float factor = dist(gen);
 
-    std::uniform_int_distribution<int> distR(minR, maxR);
-    std::uniform_int_distribution<int> distG(minG, maxG);
-    std::uniform_int_distribution<int> distB(minB, maxB);
+        uint8_t finalR = static_cast<uint8_t>(minR + factor * (maxR - minR));
+        uint8_t finalG = static_cast<uint8_t>(minG + factor * (maxG - minG));
+        uint8_t finalB = static_cast<uint8_t>(minB + factor * (maxB - minB));
 
-    return PixelColor{
-        static_cast<uint8_t>(distR(gen)),
-        static_cast<uint8_t>(distG(gen)),
-        static_cast<uint8_t>(distB(gen))
-    };
+        return PixelColor{finalR, finalG, finalB };
+    }
+    else
+    {
+        std::uniform_int_distribution<int> distR(minR, maxR);
+        std::uniform_int_distribution<int> distG(minG, maxG);
+        std::uniform_int_distribution<int> distB(minB, maxB);
+
+        return PixelColor{
+            static_cast<uint8_t>(distR(gen)),
+            static_cast<uint8_t>(distG(gen)),
+            static_cast<uint8_t>(distB(gen))
+        };
+    }
 }
 
 
 void GameCell::Create(int ID)
 {
- //   Color = GetRandomColor(GameSimulation::Config.GetMaterial (ID));
+    Color = GetRandomColor(GameConfigManager::GetGameConfigManager().GetMaterial (ID));
+    Active = true;
+}
+
+void GameCell::Destroy()
+{
+    Color = { 0,0,0 };
+    Active = false;
 }
 
 

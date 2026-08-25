@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Material schema",
+  "type": "object",
+  "required": [ "Materials" ],
+  "properties": {
+    "Materials": {
+      "type": "array",
+      "description": "array of materials",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "keep_color_proportions",
+          "color_Max_R",
+          "color_Max_G",
+          "color_Max_B",
+          "color_Min_R",
+          "color_Min_G",
+          "color_Min_B"          
+        ],
+        "unevaluatedProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Material name"
+          },
+          "keep_color_proportions": {
+            "type": "boolean",
+            "description": "Keep RGB proportions when selecting a random color"
+          },
+          "color_Max_R": {
+            "$ref": "#/$defs/colorComponent",
+            "description": "Color"
+          },
+          "color_Max_G": {
+            "$ref": "#/$defs/colorComponent",
+            "description": "Color"
+          },
+          "color_Max_B": {
+            "$ref": "#/$defs/colorComponent",
+            "description": "Color"
+          },
+          "color_Min_R": {
+            "$ref": "#/$defs/colorComponent",
+            "description": "Color"
+          },
+          "color_Min_G": {
+            "$ref": "#/$defs/colorComponent",
+            "description": "Color"
+          },
+          "color_Min_B": {
+            "$ref": "#/$defs/colorComponent",
+            "description": "Color"
+          }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "colorComponent": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 255
+    }
+  }
+
+}

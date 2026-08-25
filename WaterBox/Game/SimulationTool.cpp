@@ -18,7 +18,8 @@ void SimulationTool::ProcessMouseEvent(SimulationMouseEvent event)
 	{
 		if (event.X >= Sim->GameSizeX || event.Y >= Sim->GameSizeY) return;
 
-		auto& brr = Sim->GameField(event.X, event.Y).Color = {255,0,0};
+		auto& brr = Sim->GameField(event.X, event.Y);
+		brr.Create(0);
 
 
 	}

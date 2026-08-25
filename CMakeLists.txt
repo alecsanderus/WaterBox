@@ -1,7 +1,4 @@
-﻿# CMakeList.txt: файл проекта CMake верхнего уровня; проведите глобальную конфигурацию
-# и включите сюда подпроекты.
-#
-cmake_minimum_required (VERSION 3.20)
+﻿cmake_minimum_required (VERSION 4.0)
 
 # Включение горячей перезагрузки для компиляторов MSVC, если поддерживается.
 if (POLICY CMP0141)
@@ -27,6 +24,13 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SDL)
 
+
+
+FetchContent_Declare(
+    json
+	SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/json"
+)
+FetchContent_MakeAvailable(json)
  
 
 add_subdirectory ("WaterBox")

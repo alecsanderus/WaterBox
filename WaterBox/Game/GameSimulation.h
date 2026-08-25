@@ -2,15 +2,6 @@
 #include "WaterBox.h"
 #include "GameConfigManager.h"
 
-struct PixelColor
-{
-	uint8_t R = 0, G = 0, B = 255;
-};
-
-struct GameMaterial
-{
-	PixelColor MinColor, MaxColor;
-};
 
 template <typename T>
 class Vector2D
@@ -56,6 +47,7 @@ PixelColor GetRandomColor(const GameMaterial& material);
 struct GameCell
 {	
 	void Create(int ID);
+	void Destroy();
 
 	PixelColor Color;
 	uint16_t OriginalMaterialID = 0;

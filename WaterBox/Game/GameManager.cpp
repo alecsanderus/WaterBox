@@ -5,8 +5,6 @@
 
 void GameManager::Init()
 {
-	ConfigManager = std::make_unique <GameConfigManager>();
-
 	Simulation = std::make_unique <GameSimulation> ();
 	Simulation->SetGameFieldSize(100, 100);
 

@@ -16,7 +16,6 @@ public:
 private:
 
 	std::unique_ptr <GameSimulation> Simulation;
-	std::unique_ptr <class GameConfigManager> ConfigManager;
 	std::unique_ptr <class SimulationTool> SimTool;
 	
 

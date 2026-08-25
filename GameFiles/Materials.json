@@ -1,0 +1,17 @@
+{
+  "$schema": "Materials.schema.json",
+
+  "Materials": [
+    {
+      "name": "Bedrock",
+      "keep_color_proportions": true,
+      "color_Max_R": 113,
+      "color_Max_G": 113,
+      "color_Max_B": 113,
+      "color_Min_R": 17,
+      "color_Min_G": 17,
+      "color_Min_B": 17
+    }
+  ]
+
+}
