@@ -47,6 +47,9 @@ target_link_libraries(WaterBox PRIVATE SDL3::SDL3 nlohmann_json::nlohmann_json)
 target_include_directories(WaterBox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 copy_game_files (WaterBox)
 
+target_compile_definitions (WaterBoxConsole PRIVATE GlobalPathPrefix="GameFiles/")
+target_compile_definitions (WaterBox PRIVATE GlobalPathPrefix="GameFiles/")
+
 
 
 
