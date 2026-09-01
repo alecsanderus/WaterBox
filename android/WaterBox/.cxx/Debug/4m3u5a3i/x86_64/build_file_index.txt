@@ -1,0 +1,2 @@
+D:\VisualProgects\WaterBox\android\WaterBox\jni\CMakeLists.txt
+D:\VisualProgects\WaterBox\third_party\SDL\CMakeLists.txt

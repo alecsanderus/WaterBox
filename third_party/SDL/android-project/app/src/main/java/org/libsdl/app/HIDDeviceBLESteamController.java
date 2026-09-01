@@ -1,4 +1,4 @@
-package org.GigaGames.app;
+package org.GigaGames.WaterBox;
 
 import android.content.Context;
 import android.bluetooth.BluetoothDevice;

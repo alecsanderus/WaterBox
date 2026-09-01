@@ -1,4 +1,4 @@
-package org.GigaGames.app;
+package org.GigaGames.WaterBox;
 
 import android.app.Activity;
 import android.app.AlertDialog;

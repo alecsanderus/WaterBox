@@ -1,0 +1,48 @@
+{
+  "buildFiles": [
+    "D:\\VisualProgects\\WaterBox\\android\\WaterBox\\jni\\CMakeLists.txt",
+    "D:\\VisualProgects\\WaterBox\\third_party\\SDL\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\aayur\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "D:\\VisualProgects\\WaterBox\\android\\WaterBox\\.cxx\\Debug\\4m3u5a3i\\x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\aayur\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "D:\\VisualProgects\\WaterBox\\android\\WaterBox\\.cxx\\Debug\\4m3u5a3i\\x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "SDL3-shared::@e7c329919722962a2ad4": {
+      "artifactName": "SDL3-shared",
+      "abi": "x86_64",
+      "output": "D:\\VisualProgects\\WaterBox\\android\\WaterBox\\build\\intermediates\\cxx\\Debug\\4m3u5a3i\\obj\\x86_64\\libSDL3.so",
+      "runtimeFiles": []
+    },
+    "SDL_uclibc::@e7c329919722962a2ad4": {
+      "artifactName": "SDL_uclibc",
+      "abi": "x86_64",
+      "output": "D:\\VisualProgects\\WaterBox\\android\\WaterBox\\.cxx\\Debug\\4m3u5a3i\\x86_64\\SDL\\libSDL_uclibc.a",
+      "runtimeFiles": []
+    },
+    "main::@6890427a1f51a3e7e1df": {
+      "artifactName": "main",
+      "abi": "x86_64",
+      "output": "D:\\VisualProgects\\WaterBox\\android\\WaterBox\\build\\intermediates\\cxx\\Debug\\4m3u5a3i\\obj\\x86_64\\libmain.so",
+      "runtimeFiles": [
+        "D:\\VisualProgects\\WaterBox\\android\\WaterBox\\build\\intermediates\\cxx\\Debug\\4m3u5a3i\\obj\\x86_64\\libSDL3.so"
+      ]
+    },
+    "SDL3_test::@e7c329919722962a2ad4": {
+      "artifactName": "SDL3_test",
+      "abi": "x86_64",
+      "output": "D:\\VisualProgects\\WaterBox\\android\\WaterBox\\.cxx\\Debug\\4m3u5a3i\\x86_64\\SDL\\libSDL3_test.a",
+      "runtimeFiles": []
+    }
+  }
+}

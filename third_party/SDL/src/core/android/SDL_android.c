@@ -586,11 +586,11 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
         return JNI_VERSION_1_4;
     }
 
-    register_methods(env, "org/GigaGames/app/SDLActivity", SDLActivity_tab, SDL_arraysize(SDLActivity_tab));
-    register_methods(env, "org/GigaGames/app/SDLInputConnection", SDLInputConnection_tab, SDL_arraysize(SDLInputConnection_tab));
-    register_methods(env, "org/GigaGames/app/SDLAudioManager", SDLAudioManager_tab, SDL_arraysize(SDLAudioManager_tab));
-    register_methods(env, "org/GigaGames/app/SDLControllerManager", SDLControllerManager_tab, SDL_arraysize(SDLControllerManager_tab));
-    register_methods(env, "org/GigaGames/app/HIDDeviceManager", HIDDeviceManager_tab, SDL_arraysize(HIDDeviceManager_tab));
+    register_methods(env, "org/GigaGames/WaterBox/SDLActivity", SDLActivity_tab, SDL_arraysize(SDLActivity_tab));
+    register_methods(env, "org/GigaGames/WaterBox/SDLInputConnection", SDLInputConnection_tab, SDL_arraysize(SDLInputConnection_tab));
+    register_methods(env, "org/GigaGames/WaterBox/SDLAudioManager", SDLAudioManager_tab, SDL_arraysize(SDLAudioManager_tab));
+    register_methods(env, "org/GigaGames/WaterBox/SDLControllerManager", SDLControllerManager_tab, SDL_arraysize(SDLControllerManager_tab));
+    register_methods(env, "org/GigaGames/WaterBox/HIDDeviceManager", HIDDeviceManager_tab, SDL_arraysize(HIDDeviceManager_tab));
 
     return JNI_VERSION_1_4;
 }

@@ -23,5 +23,5 @@ protected:
 	std::vector<GameMaterial> Materials;
 	std::unordered_map <std::string, int> MaterialsLookupMap;
 
-	const std::string MaterialsFileName = "GameFiles/Materials.json";
+	const std::string MaterialsFileName = "Materials.json";
 };

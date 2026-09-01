@@ -467,13 +467,13 @@ extern SDL_DECLSPEC bool SDLCALL SDL_SetAppMetadata(const char *appname, const c
  */
 extern SDL_DECLSPEC bool SDLCALL SDL_SetAppMetadataProperty(const char *name, const char *value);
 
-#define SDL_PROP_APP_METADATA_NAME_STRING         "SDL.app.metadata.name"
-#define SDL_PROP_APP_METADATA_VERSION_STRING      "SDL.app.metadata.version"
-#define SDL_PROP_APP_METADATA_IDENTIFIER_STRING   "SDL.app.metadata.identifier"
-#define SDL_PROP_APP_METADATA_CREATOR_STRING      "SDL.app.metadata.creator"
-#define SDL_PROP_APP_METADATA_COPYRIGHT_STRING    "SDL.app.metadata.copyright"
-#define SDL_PROP_APP_METADATA_URL_STRING          "SDL.app.metadata.url"
-#define SDL_PROP_APP_METADATA_TYPE_STRING         "SDL.app.metadata.type"
+#define SDL_PROP_APP_METADATA_NAME_STRING         "SDL.WaterBox.metadata.name"
+#define SDL_PROP_APP_METADATA_VERSION_STRING      "SDL.WaterBox.metadata.version"
+#define SDL_PROP_APP_METADATA_IDENTIFIER_STRING   "SDL.WaterBox.metadata.identifier"
+#define SDL_PROP_APP_METADATA_CREATOR_STRING      "SDL.WaterBox.metadata.creator"
+#define SDL_PROP_APP_METADATA_COPYRIGHT_STRING    "SDL.WaterBox.metadata.copyright"
+#define SDL_PROP_APP_METADATA_URL_STRING          "SDL.WaterBox.metadata.url"
+#define SDL_PROP_APP_METADATA_TYPE_STRING         "SDL.WaterBox.metadata.type"
 
 /**
  * Get metadata about your app.

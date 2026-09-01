@@ -1,4 +1,4 @@
-package org.GigaGames.app;
+package org.GigaGames.WaterBox;
 
 import android.hardware.usb.*;
 import android.util.Log;

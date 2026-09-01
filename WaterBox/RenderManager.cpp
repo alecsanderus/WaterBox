@@ -30,6 +30,9 @@ bool RenderManager::Init()
         return true;
     }
 
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
+
+
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         LOG_FATAL("SDL_Init failed");
         LOG_FATAL(SDL_GetError());
@@ -37,8 +40,8 @@ bool RenderManager::Init()
     }
 
     window = SDL_CreateWindow(
-        "app",
-        800, 600,
+        "WaterBox",
+        1000, 600,
         SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY
     );
 
