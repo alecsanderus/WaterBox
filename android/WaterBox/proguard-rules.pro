@@ -16,7 +16,7 @@
 #   public *;
 #}
 
--keep,includedescriptorclasses,allowoptimization class org.GigaGames.app.SDLActivity {
+-keep,includedescriptorclasses,allowoptimization class org.GigaGames.WaterBox.SDLActivity {
     java.lang.String nativeGetHint(java.lang.String); # Java-side doesn't use this, so it gets minified, but C-side still tries to register it
     java.lang.String clipboardGetText();
     boolean clipboardHasText();
@@ -54,7 +54,7 @@
     java.lang.String formatLocale(java.util.Locale);
 }
 
--keep,includedescriptorclasses,allowoptimization class org.GigaGames.app.HIDDeviceManager {
+-keep,includedescriptorclasses,allowoptimization class org.GigaGames.WaterBox.HIDDeviceManager {
     void closeDevice(int);
     boolean initialize(boolean, boolean);
     boolean openDevice(int);
@@ -62,13 +62,13 @@
     int writeReport(int, byte[], boolean);
 }
 
--keep,includedescriptorclasses,allowoptimization class org.GigaGames.app.SDLAudioManager {
+-keep,includedescriptorclasses,allowoptimization class org.GigaGames.WaterBox.SDLAudioManager {
     void registerAudioDeviceCallback();
     void unregisterAudioDeviceCallback();
     void audioSetThreadPriority(boolean, int);
 }
 
--keep,includedescriptorclasses,allowoptimization class org.GigaGames.app.SDLControllerManager {
+-keep,includedescriptorclasses,allowoptimization class org.GigaGames.WaterBox.SDLControllerManager {
     void joystickSetSensorsEnabled(int, boolean);
     void pollInputDevices();
     void joystickSetLED(int, int, int, int);
