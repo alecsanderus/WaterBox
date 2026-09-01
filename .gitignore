@@ -83,9 +83,12 @@ android/build/
 *.aar
 *.ap_
 *.der
+*.aab
 
 # Кэш и логи Android инструментов
 android/.cxx/
+android/WaterBox/.cxx/
+
 android/.externalNativeBuild/
 android/captures/
 *.hprof
