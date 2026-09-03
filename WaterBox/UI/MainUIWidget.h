@@ -11,7 +11,7 @@ public:
 
 protected:
 
-	class GridBoxWidget* GridBox;
-	class VerticalBoxWidget* VerticalBox;
-	class HorizontalBoxWidget* HorizontalBox;
+	class GridBoxWidget* GridBox = nullptr;
+	class VerticalBoxWidget* VerticalBox = nullptr;
+	class HorizontalBoxWidget* HorizontalBox = nullptr;
 };
