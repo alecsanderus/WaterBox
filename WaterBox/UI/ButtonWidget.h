@@ -14,7 +14,7 @@ public:
 
 	virtual void SetOnClick(ClickCallback callback);
 
-	
+	uint8_t r = 255;
 
 protected:
 

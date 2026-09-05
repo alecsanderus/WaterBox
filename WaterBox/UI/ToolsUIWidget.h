@@ -5,11 +5,11 @@
 //class GridBoxWidget;
 //class ScrollBoxWidget;
 
-class MaterialsUIWidget : public BaseWidget 
+class ToolsUIWidget : public BaseWidget
 {
 public:
     void Init();
-    void CheckSize(const PrimitivePoint& Size);
+    void CheckSize(const PrimitivePoint& Position);
 
 protected:
 

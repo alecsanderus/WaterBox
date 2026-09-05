@@ -6,11 +6,9 @@
 #include <stdexcept>
 
 
-std::string GetStackTrace();
 
-void OpenProgramDeathScreen(const std::string& log) {
-    std::string fullLog = log + "\n\nStack trace:\n" + GetStackTrace();
-    LOG_FATAL(fullLog);
+void OpenProgramDeathScreen(const std::string& log) {    
+    LOG_FATAL(log);
 
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal error", log.c_str(), nullptr);
 }
@@ -51,35 +49,6 @@ void TranslateException(unsigned int code, EXCEPTION_POINTERS* ep) {
     throw std::runtime_error(errorMsg);
 }
 
-std::string GetStackTrace() {
-    std::stringstream ss;
-    void* stack[64];
-    WORD frames = CaptureStackBackTrace(0, 64, stack, NULL);
-
-    HANDLE process = GetCurrentProcess();
-    SymInitialize(process, NULL, TRUE);
-
-    SYMBOL_INFO* symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256, 1);
-    if (symbol)
-    {
-        symbol->MaxNameLen = 255;
-        symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
-
-        for (WORD i = 0; i < frames; i++) {
-            if (SymFromAddr(process, (DWORD64)stack[i], 0, symbol)) {
-                ss << "  [" << i << "] " << symbol->Name
-                    << " (0x" << std::hex << std::uppercase << symbol->Address << ")\n";
-            }
-        }
-
-        free(symbol);
-    }
-    else
-        ss << "Can not get Stack Trace";
-
-    SymCleanup(process);
-    return ss.str();
-}
 
 LONG WINAPI UnhandledExceptionFilterPro(EXCEPTION_POINTERS* ep) {
     std::string errorMsg = "=== UNHANDLED EXCEPTION ===\n";
@@ -110,8 +79,6 @@ LONG WINAPI UnhandledExceptionFilterPro(EXCEPTION_POINTERS* ep) {
     case EXCEPTION_BREAKPOINT:           errorMsg += "Type: BREAKPOINT\n"; break;
     default:                             errorMsg += "Type: UNKNOWN\n"; break;
     }
-
-    errorMsg += "\nStack trace:\n" + GetStackTrace();
 
     LOG_FATAL(errorMsg);
 

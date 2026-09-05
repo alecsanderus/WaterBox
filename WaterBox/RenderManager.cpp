@@ -233,6 +233,34 @@ void RenderManager::DrawRect(PrimitiveRect Rect)
     SDL_RenderFillRect(renderer, &rect);
 }
 
+void RenderManager::SetClipRect(const PrimitiveRect* rect)
+{
+    if (rect == nullptr || !(rect->pos.x || rect->pos.y || rect->size.x || rect->size.y))
+    {        
+        SDL_SetRenderClipRect (renderer, nullptr);
+        return;
+    }
+
+    SDL_Rect sdlRect{
+        rect->pos.x,
+        rect->pos.y,
+        rect->size.x,
+        rect->size.y
+    };
+
+    SDL_SetRenderClipRect(renderer, &sdlRect);
+}
+
+void RenderManager::GetClipRect(PrimitiveRect& outRect)
+{
+    SDL_Rect sdlRect;
+    SDL_GetRenderClipRect(renderer, &sdlRect);
+
+    outRect.pos.x = sdlRect.x;
+    outRect.pos.y = sdlRect.y;
+    outRect.size.x = sdlRect.w;
+    outRect.size.y = sdlRect.h;
+}
 
 void RenderManager::UpdateScreenInfo()
 {

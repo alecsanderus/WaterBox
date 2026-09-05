@@ -1,9 +1,8 @@
 #include "MainUIWidget.h"
 #include "HorizontalBoxWidget.h"
-#include "VerticalBoxWidget.h"
-#include "GridBoxWidget.h"
+#include "MaterialsUIWidget.h"
+#include "ToolsUIWidget.h"
 #include "GameViewWidget.h"
-#include "ButtonWidget.h"
 #include "RenderManager.h"
 
 void MainUIWidget::Init()
@@ -11,20 +10,18 @@ void MainUIWidget::Init()
 	Children.clear();
 
 	Children.emplace_back(std::make_unique <HorizontalBoxWidget> ());
-	HorizontalBox = static_cast  <HorizontalBoxWidget*> (Children[0].get());
+	MainHorizontalBox = static_cast  <HorizontalBoxWidget*> (Children[0].get());
 
-	HorizontalBox->Children.emplace_back(std::make_unique <GameViewWidget>());
+	MainHorizontalBox->Children.emplace_back(std::make_unique <GameViewWidget>());
 
-	HorizontalBox->Children.emplace_back(std::make_unique <VerticalBoxWidget>());
-	VerticalBox = static_cast  <VerticalBoxWidget*> (HorizontalBox->Children[1].get());
 
+	MainHorizontalBox->Children.emplace_back(std::make_unique <ToolsUIWidget>());
+	MainToolsBox = static_cast  <ToolsUIWidget*> (MainHorizontalBox->Children[1].get());
 	
 
-	HorizontalBox->Children.emplace_back(std::make_unique <GridBoxWidget>());
-
-	GridBox = static_cast  <GridBoxWidget*> (HorizontalBox->Children[2].get());
-
-
+	MainHorizontalBox->Children.emplace_back(std::make_unique <MaterialsUIWidget>());
+	MainMaterialsWidget = static_cast  <MaterialsUIWidget*> (MainHorizontalBox->Children[2].get());
+	MainMaterialsWidget->Init();
 }
 
 void MainUIWidget::Render(RenderManager& renderer, const PrimitivePoint& Position)
@@ -32,9 +29,10 @@ void MainUIWidget::Render(RenderManager& renderer, const PrimitivePoint& Positio
 	
 	auto ScreenInfo = RenderManager::GetScreenInfo();
 
-	GridBox->MaxPossibleSize = ScreenPoint{ .x = ScreenInfo->ScreenSizeX - HorizontalBox->GetSize().x + GridBox->GetSize().x,
+	auto MaterialsSize = ScreenPoint{ .x = ScreenInfo->ScreenSizeX - MainHorizontalBox->GetSize().x + MainMaterialsWidget->GetSize().x,
 		.y = ScreenInfo->ScreenSizeY, .IsVirtualCoordinates = false};
 
+	MainMaterialsWidget->CheckSize(MaterialsSize);
 	BaseWidget::Render(renderer, Position);
 }
 

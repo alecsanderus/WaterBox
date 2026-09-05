@@ -11,7 +11,8 @@ public:
 
 protected:
 
-	class GridBoxWidget* GridBox = nullptr;
-	class VerticalBoxWidget* VerticalBox = nullptr;
-	class HorizontalBoxWidget* HorizontalBox = nullptr;
+	class HorizontalBoxWidget* MainHorizontalBox = nullptr;
+
+	class ToolsUIWidget* MainToolsBox = nullptr;
+	class MaterialsUIWidget* MainMaterialsWidget = nullptr;	
 };

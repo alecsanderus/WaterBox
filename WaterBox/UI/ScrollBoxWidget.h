@@ -1,48 +1,26 @@
 #pragma once
-#include "VerticalBoxWidget.h"
+#include "BaseWidget.h"
 
 //class VerticalBoxWidget;
 //class GridBoxWidget;
 //class ScrollBoxWidget;
 
-class ScrollBoxWidget : public VerticalBoxWidget
+class ScrollBoxWidget : public BaseWidget
 {
-
-
-//#pragma once
-//#include "BaseWidget.h"
-//#include "ScreenPositionContainers.h" // Предполагается, что ScreenPoint/PrimitivePoint здесь
-/*
-enum class ScrollDirection {
-    Vertical,
-    Horizontal
-};
-
-class ScrollBoxWidget : public BaseWidget {
 public:
-    ScrollBoxWidget() = default;
-    virtual ~ScrollBoxWidget() = default;
 
-    // Переопределения базового виджета
+    enum class ScrollDirection : uint8_t{Vertical, Horizontal};
+
     virtual bool ProcessEvent(const ScreenEvent& event) override;
     virtual void Render(RenderManager& renderer, const PrimitivePoint& Position) override;
     virtual PrimitivePoint GetSize() override;
 
-    // Управление направлением скролла
-    void SetDirection(ScrollDirection dir);
-    ScrollDirection GetDirection() const;
+    ScrollDirection Direction = ScrollDirection::Vertical;
 
-    // Размеры контейнера скролла (задаются извне, например, в MaterialsUIWidget)
     ScreenPoint MaxPossibleSize;
 
 protected:
-    ScrollDirection Direction = ScrollDirection::Vertical;
-    
-    // Текущее смещение скролла в пикселях (всегда <= 0)
     int ScrollOffset = 0;
 
-    // Вспомогательный метод для получения максимального прокручиваемого расстояния
     int GetMaxScrollOffset();
-};
-*/ 
 };
