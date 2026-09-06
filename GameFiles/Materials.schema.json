@@ -11,19 +11,29 @@
         "type": "object",
         "required": [
           "name",
+          "can_be_shown",
           "keep_color_proportions",
+          "category_key",
           "color_Max_R",
           "color_Max_G",
           "color_Max_B",
           "color_Min_R",
           "color_Min_G",
-          "color_Min_B"          
+          "color_Min_B"
         ],
         "unevaluatedProperties": false,
         "properties": {
           "name": {
             "type": "string",
-            "description": "Material name"
+            "description": "Material name, its ID"
+          },
+          "can_be_shown": {
+            "type": "boolean",
+            "description": "Must show this material in the material table"
+          },
+          "category_key": {
+            "type": "string",
+            "description": "Materials category"
           },
           "keep_color_proportions": {
             "type": "boolean",
@@ -55,9 +65,47 @@
           }
         }
       }
+    },
+
+    "Categories": {
+      "type": "array",
+      "description": "array of categories",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "can_be_shown",
+          "color_R",
+          "color_G",
+          "color_B"
+        ],
+        "unevaluatedProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Category name, its ID"
+          },
+          "can_be_shown": {
+            "type": "boolean",
+            "description": "Must show this category in the material table"
+          },
+          "color_R": {
+            "$ref": "#/$defs/colorComponent",
+            "description": "Color"
+          },
+          "color_G": {
+            "$ref": "#/$defs/colorComponent",
+            "description": "Color"
+          },
+          "color_B": {
+            "$ref": "#/$defs/colorComponent",
+            "description": "Color"
+          }
+
+        }
+      }
     }
   },
-
   "$defs": {
     "colorComponent": {
       "type": "integer",
@@ -65,5 +113,4 @@
       "maximum": 255
     }
   }
-
 }

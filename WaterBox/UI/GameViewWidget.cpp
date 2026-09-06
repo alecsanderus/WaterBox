@@ -93,8 +93,12 @@ bool GameViewWidget::ProcessEvent(const in::InputEvent& event)
 {
     auto& lock = RenderManager::GetLockEventState();
 
-    if (lock.first != this && ( event.x >= SizeX || event.y >= SizeY || event.isMouseButton()))
-        return false;
+    if (lock.first != this)
+    {
+        if (event.x >= SizeX || event.y >= SizeY || event.x < 0 || event.y < 0 || !(event.isMouseButton() || event.isMouseScroll()))
+            return false;
+    }
+  
  
     auto& SimTool = GameManager::GetGameManager().GetSimulationTool();       
     auto MySize = GetSize();
@@ -104,6 +108,15 @@ bool GameViewWidget::ProcessEvent(const in::InputEvent& event)
 
     int PosX = NewEvent.x = event.x * GameSize.first / MySize.x;
     int PosY = NewEvent.y = event.y * GameSize.second / MySize.y;   
+
+
+    if (event.isMouseScroll())
+    {
+        SimTool.ProcessEvent(event);
+        return true;
+    }
+
+
 
     PosX = std::max(PosX, 0);
     PosY = std::max(PosY, 0);

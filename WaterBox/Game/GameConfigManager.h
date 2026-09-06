@@ -14,14 +14,23 @@ public:
 	}
 
 	const std::vector <GameMaterial>& GetMaterials ();
-	int GetMaterialIndex(std::string name);
+	int GetMaterialIndex(std::string Name);
 	const GameMaterial& GetMaterial(int ID);
-	void LoadMaterials();
 
-protected:
+	void LoadConfig();
+	bool LoadMaterials(std::string FileName);
+
+private:
 	bool AreMaterialsLoaded = false;
+
 	std::vector<GameMaterial> Materials;
 	std::unordered_map <std::string, int> MaterialsLookupMap;
+
+	std::vector<MaterialCategory> Categories;
+	std::unordered_map <std::string, int> CategoriesLookupMap;
+
+	template <typename T>
+	int GetArrayIndex(const std::string& ID, std::vector <T>& elements, std::unordered_map <std::string, int>& NamesMap);
 
 	const std::string MaterialsFileName = "Materials.json";
 };
