@@ -61,11 +61,6 @@ void SimulationTool::ProcessMouseMoveEvent(int x, int y)
 		UseSquareTool(x, y, [&Field, &Mater](int x, int y) {
 			Field(x, y).Create(Mater);
 			});
-
-		auto& brr = Sim->GameField(x, y);
-		brr.Create(0);
-
-
 	}
 	else if (RMB_State)
 	{

@@ -14,6 +14,8 @@ public:
 	}
 
 	const std::vector <GameMaterial>& GetMaterials ();
+	const std::vector <MaterialCategory>& GetCategories();
+
 	int GetMaterialIndex(std::string Name);
 	const GameMaterial& GetMaterial(int ID);
 

@@ -13,6 +13,18 @@
       "color_Min_R": 17,
       "color_Min_G": 17,
       "color_Min_B": 17
+    },
+    {
+      "name": "main:gold_ore",
+      "can_be_shown": true,
+      "category_key": "main:solids",
+      "keep_color_proportions": false,
+      "color_Max_R": 255,
+      "color_Max_G": 215,
+      "color_Max_B": 0,
+      "color_Min_R": 140,
+      "color_Min_G": 105,
+      "color_Min_B": 10
     }
   ],
 

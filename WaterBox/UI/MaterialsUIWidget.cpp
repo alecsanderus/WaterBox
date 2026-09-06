@@ -5,6 +5,9 @@
 #include "GridBoxWidget.h"
 #include "ScrollBoxWidget.h"
 #include "ButtonWidget.h"
+#include "Game/GameConfigManager.h"
+#include "Game/GameManager.h"
+#include "Game/SimulationTool.h"
 
 void MaterialsUIWidget::Init()
 {
@@ -22,6 +25,11 @@ void MaterialsUIWidget::Init()
     ScrollBox->Children.emplace_back(std::make_unique<GridBoxWidget>());
     BottomGridBox = static_cast<GridBoxWidget*>(ScrollBox->Children.back().get());
 
+    auto& manager = GameConfigManager::GetGameConfigManager();
+    auto& Materials = manager.GetMaterials();
+    auto& Categories = manager.GetCategories();
+
+
     for (size_t i = 0; i < 2; i++)
     {
         TopGridBox->Children.emplace_back(std::make_unique<ButtonWidget>());
@@ -29,12 +37,13 @@ void MaterialsUIWidget::Init()
         but->r = 90;
         but->SetOnClick([but]() { but->r = ~but->r; });
     }
-
-    for (size_t i = 0; i < 10; i++)
+    
+    for (size_t i = 0; i < Materials.size(); i++)
     {
         BottomGridBox->Children.emplace_back(std::make_unique<ButtonWidget>());
         auto but = static_cast<ButtonWidget*>(BottomGridBox->Children.back().get());
-        but->SetOnClick([but]() { but->r = ~but->r; });
+        int SigmaID = Materials[i].ID;
+        but->SetOnClick([but, SigmaID]() { but->r = ~but->r;  GameManager::GetGameManager().GetSimulationTool().SetMaterial(SigmaID); });
     }
 
 

@@ -12,6 +12,13 @@ const std::vector<GameMaterial>& GameConfigManager::GetMaterials()
 	return Materials;
 }
 
+const std::vector<MaterialCategory>& GameConfigManager::GetCategories()
+{
+    if (!AreMaterialsLoaded)
+        LoadConfig();
+    return Categories;
+}
+
 int GameConfigManager::GetMaterialIndex(std::string Name)
 {
     auto ptr = MaterialsLookupMap.find(Name);
