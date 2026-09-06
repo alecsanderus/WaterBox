@@ -1,7 +1,11 @@
 #pragma once
 #include "UI/MainUIWidget.h"
+#include <optional>
+
 
 union SDL_Event;
+namespace in { struct InputEvent; }
+
 
 struct ScreenInfoStruct
 {
@@ -9,29 +13,6 @@ struct ScreenInfoStruct
 	int ScreenSizeY = 1080;
 };
 
-
-enum class ScreenEventButtonType : uint8_t
-{
-	NO,
-	RMB,
-	LMB,
-	MMB,
-	FINGER
-};
-
-enum class ScreenEventType : uint8_t
-{
-	DOWN,
-	UP,
-	MOVE
-};
-
-struct ScreenEvent
-{
-	ScreenEventButtonType ButtonType = ScreenEventButtonType::NO;
-	ScreenEventType Type;
-	PrimitivePoint Point;
-};
 
 enum class EventFocusType : uint8_t
 {
@@ -52,7 +33,6 @@ private:
 	struct SDL_Renderer* renderer = nullptr;
 	bool NeedToDestroyWindow = false;
 	void UpdateScreenInfo();
-	struct SimulationKeyEvent CreateSimulationKeyEvent(const SDL_Event& sdlEvent);
 
 
 public:
@@ -68,6 +48,9 @@ public:
 	struct SDL_Renderer* GetSDLRenderer(){
 		return renderer;
 	}
+
+	std::optional<in::InputEvent> TranslateSDLEvent(const SDL_Event& sdlEvent);
+
 
 	bool Init();
 	bool Render();

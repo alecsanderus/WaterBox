@@ -1,7 +1,7 @@
 #include "TabsBoxWidget.h"
 
 
-bool TabsBoxWidget::ProcessEvent(const ScreenEvent& event) {
+bool TabsBoxWidget::ProcessEvent(const in::InputEvent& event) {
     if (TecPosition >= 0 && TecPosition < static_cast<int>(Children.size())) {
         if (Children[TecPosition]->ProcessEvent(event)) {
             return true;

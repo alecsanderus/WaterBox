@@ -3,14 +3,15 @@
 #include "ScreenPositionContainers.h"
 
 class RenderManager;
-struct ScreenEvent;
 struct WidgetSize;
+namespace in {struct InputEvent;}
+
 
 class BaseWidget
 {
 public:
 
-    virtual bool ProcessEvent(const ScreenEvent& event);
+    virtual bool ProcessEvent(const in::InputEvent& event);
     virtual void Render(RenderManager& renderer, const PrimitivePoint & Position);
     virtual PrimitivePoint GetSize();
    

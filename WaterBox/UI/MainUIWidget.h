@@ -7,7 +7,7 @@ public:
 	void Init();
 	virtual void Render(RenderManager& renderer, const PrimitivePoint& Position) override;
 
-	virtual bool ProcessEvent(const ScreenEvent& event) override;
+	virtual bool ProcessEvent(const in::InputEvent& event) override;
 
 protected:
 

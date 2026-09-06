@@ -4,6 +4,7 @@
 #include "ToolsUIWidget.h"
 #include "GameViewWidget.h"
 #include "RenderManager.h"
+#include "InputEvent.h"
 
 void MainUIWidget::Init()
 {
@@ -24,6 +25,9 @@ void MainUIWidget::Init()
 	MainMaterialsWidget->Init();
 }
 
+
+
+
 void MainUIWidget::Render(RenderManager& renderer, const PrimitivePoint& Position)
 {
 	
@@ -36,7 +40,10 @@ void MainUIWidget::Render(RenderManager& renderer, const PrimitivePoint& Positio
 	BaseWidget::Render(renderer, Position);
 }
 
-bool MainUIWidget::ProcessEvent(const ScreenEvent& event)
+
+
+
+bool MainUIWidget::ProcessEvent(const in::InputEvent& event)
 {
 	auto& [pointer, type] = RenderManager::GetLockEventState();
 	if (type != EventFocusType::NO && pointer != nullptr)
@@ -45,11 +52,15 @@ bool MainUIWidget::ProcessEvent(const ScreenEvent& event)
 
 
 
-		if (type == EventFocusType::Lock_AutoUnlock && event.Type == ScreenEventType::UP)
+		if (event.isMouseButton() && type == EventFocusType::Lock_AutoUnlock &&
+			std::get <in::MouseButtonEvent>(event.data).action == in::InputAction::Release)
+
 			type = EventFocusType::NO;
 
 		if (type == EventFocusType::NO)
 			pointer = nullptr;
+
+
 
 		return state;
 	}

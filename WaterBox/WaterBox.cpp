@@ -18,9 +18,9 @@ int main(int argc, char* argv[]) {
 
     Logger::Instance().Init();
     SDL_SetLogOutputFunction(LogCallback, nullptr);
-
+ return GameMain();
     try {  
-        return GameMain();
+       
     }
     catch (const std::exception& e) {
         OpenProgramDeathScreen(std::string("Fatal error (std::exception): ") + e.what());

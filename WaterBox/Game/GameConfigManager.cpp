@@ -27,12 +27,15 @@ const GameMaterial& GameConfigManager::GetMaterial(int ID)
 		LoadMaterials();
 
     if (!AreMaterialsLoaded)
-        throw "Materials are not loaded yet";
+    {
+        LOG_FATAL("Materials are not loaded yet");
+        return { .MinColor = {0,0,0}, .MaxColor = {255,255,255}, .KeepColorProportions = false };
+    }
 
-	if (ID < Materials.size())
-		return Materials[ID];
-	else
-		return Materials[0];
+    if (ID < Materials.size())
+        return Materials[ID];
+    else
+        return { .MinColor = {0,0,0}, .MaxColor = {255,255,255}, .KeepColorProportions = false };
 }
 
 void GameConfigManager::LoadMaterials()

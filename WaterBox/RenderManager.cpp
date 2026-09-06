@@ -5,6 +5,8 @@
 #include "UI/ScreenPositionContainers.h"
 #include "Game/SimulationTool.h"
 #include "Game/GameManager.h"
+#include "InputEvent.h"
+
 
 
 RenderManager::RenderManager()
@@ -99,118 +101,46 @@ void RenderManager::Destroy()
 
 bool RenderManager::ProcessEvent(const SDL_Event& EventSDL)
 {
-    switch (EventSDL.type)
-    {
 
-    case SDL_EVENT_WINDOW_RESIZED:
-    {
-        UpdateScreenInfo();
-        break;
-    }
+    auto EventVariant = TranslateSDLEvent(EventSDL);
 
-    case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+    if (!EventVariant)
     {
-        UpdateScreenInfo();
-        break;
-    }
-
-    case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED:
-    {
-        UpdateScreenInfo();
-    
-        break;
-    }
-
-    case SDL_EVENT_MOUSE_BUTTON_DOWN:
-    {
-        ScreenEvent Event;
-        Event.Point.x = static_cast <int> (EventSDL.button.x);
-        Event.Point.y = static_cast <int> (EventSDL.button.y);
-        Event.Type = ScreenEventType::DOWN;
-        switch (EventSDL.button.button)
+        switch (EventSDL.type)
         {
-        case SDL_BUTTON_LEFT:
-            Event.ButtonType = ScreenEventButtonType::LMB;
-            break;
 
-        case SDL_BUTTON_RIGHT:
-            Event.ButtonType = ScreenEventButtonType::RMB;
-            break;
-
-        case SDL_BUTTON_MIDDLE:
-            Event.ButtonType = ScreenEventButtonType::MMB;
-            break;
+        case SDL_EVENT_WINDOW_RESIZED:
+        {
+            UpdateScreenInfo();
+            return true;
         }
 
-        MainWidget.ProcessEvent(Event);
-        break;
-    }
-     
-
-    case SDL_EVENT_MOUSE_BUTTON_UP:
-    {
-        ScreenEvent Event;
-        Event.Point.x = static_cast <int> (EventSDL.button.x);
-        Event.Point.y = static_cast <int> (EventSDL.button.y);
-        Event.Type = ScreenEventType::UP;
-        switch (EventSDL.button.button)
+        case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
         {
-        case SDL_BUTTON_LEFT:
-            Event.ButtonType = ScreenEventButtonType::LMB;
-            break;
-
-        case SDL_BUTTON_RIGHT:
-            Event.ButtonType = ScreenEventButtonType::RMB;
-            break;
-
-        case SDL_BUTTON_MIDDLE:
-            Event.ButtonType = ScreenEventButtonType::MMB;
-            break;
+            UpdateScreenInfo();
+            return true;
         }
 
-        MainWidget.ProcessEvent(Event);
-        break;
-    }
-
-    case SDL_EVENT_MOUSE_MOTION:
-    {
-        ScreenEvent Event;
-        Event.Point.x = static_cast <int> (EventSDL.motion.x);
-        Event.Point.y = static_cast <int> (EventSDL.motion.y);
-        Event.Type = ScreenEventType::MOVE;
-
-        MainWidget.ProcessEvent(Event);
-        break;
-    }
-
-    case SDL_EVENT_KEY_DOWN:
-    {
-        if (EventSDL.key.key == SDLK_F11)
+        case SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED:
         {
-            bool FullScreen = SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN;
+            UpdateScreenInfo();
 
-            SDL_SetWindowFullscreen(window, !FullScreen);
+            return true;
         }
-        else
+        default:
         {
-            auto Event = CreateSimulationKeyEvent(EventSDL);
-            Event.State = true;
-            GameManager::GetGameManager().GetSimulationTool().ProcessKeyEvent(Event);
-
+            return false;
         }
-        break;
-    }
-    case SDL_EVENT_KEY_UP:
-    {
-        auto Event = CreateSimulationKeyEvent(EventSDL);
-        Event.State = false;
-        GameManager::GetGameManager().GetSimulationTool().ProcessKeyEvent(Event);
-    }
-        break;
-    default:
-        return false;
-        break;
-    }
+        }
+    } 
+
+    auto& event = EventVariant.value();
+    if (event.isMouseMove() || event.isMouseButton() || event.isMouseScroll())
+        MainWidget.ProcessEvent(event);
+
+    else if (event.isKey())
+        GameManager::GetGameManager().GetSimulationTool().ProcessEvent(event);
+
 
     return true;
 }
@@ -274,50 +204,121 @@ void RenderManager::UpdateScreenInfo()
     ScreenInfo->ScreenSizeY = h;
 }
 
+std::optional<in::InputEvent> RenderManager::TranslateSDLEvent(const SDL_Event& sdlEvent) {
+    using namespace in;
 
-SimulationKeyEvent RenderManager::CreateSimulationKeyEvent (const SDL_Event& sdlEvent)
-{
-    SimulationKeyEvent simEvent;
+    InputEvent result;
 
-  
-    simEvent.State = sdlEvent.key.down;
-
-    SDL_Keycode keycode = sdlEvent.key.key;
-
-    switch (keycode)
     {
-    case SDLK_SPACE:
-        simEvent.Type = SimulationKeyEvent::SimulationKeyEventSymbol::SPACE;
-        break;
+        auto SDL_Modifiers = SDL_GetModState();
 
-    case SDLK_LSHIFT:
-    case SDLK_RSHIFT:
-        simEvent.Type = SimulationKeyEvent::SimulationKeyEventSymbol::SHIFT;
-        break;
+        KeyModifiers mods = KeyModifiers::None;
+        if (SDL_Modifiers & SDL_KMOD_SHIFT) mods = mods | KeyModifiers::Shift;
+        if (SDL_Modifiers & SDL_KMOD_CTRL)  mods = mods | KeyModifiers::Ctrl;
+        if (SDL_Modifiers & SDL_KMOD_ALT)   mods = mods | KeyModifiers::Alt;
+        result.modifiers = mods;
+    }
 
-    case SDLK_LCTRL:
-    case SDLK_RCTRL:
-        simEvent.Type = SimulationKeyEvent::SimulationKeyEventSymbol::CONTROL;
-        break;
+    switch (sdlEvent.type) {
 
-    case SDLK_LALT:
-    case SDLK_RALT:
-        simEvent.Type = SimulationKeyEvent::SimulationKeyEventSymbol::ALT;
-        break;
+    case SDL_EVENT_MOUSE_MOTION: {
+        result.data = MouseMoveEvent{};
+
+        result.x = static_cast<int32_t>(sdlEvent.motion.x);
+        result.y = static_cast<int32_t>(sdlEvent.motion.y);
+        return result;
+    }
+
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP: {
+
+        MouseButton btn = MouseButton::None;
+        switch (sdlEvent.button.button) {
+        case SDL_BUTTON_LEFT:   btn = MouseButton::Left; break;
+        case SDL_BUTTON_RIGHT:  btn = MouseButton::Right; break;
+        case SDL_BUTTON_MIDDLE: btn = MouseButton::Middle; break;
+        case SDL_BUTTON_X1:     btn = MouseButton::XButton1; break;
+        case SDL_BUTTON_X2:     btn = MouseButton::XButton2; break;
+        }
+
+        result.data = MouseButtonEvent{           
+            .button = btn,
+            .action = (sdlEvent.type == SDL_EVENT_MOUSE_BUTTON_DOWN) ? InputAction::Press : InputAction::Release
+        };
+        result.x = static_cast<int32_t>(sdlEvent.button.x);
+        result.y = static_cast<int32_t>(sdlEvent.button.y);
+        return result;
+    }
+
+
+    case SDL_EVENT_MOUSE_WHEEL: {
+        float mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+
+        result.data = MouseScrollEvent{
+            
+            .deltaX = sdlEvent.wheel.x,
+            .deltaY = sdlEvent.wheel.y,
+            .FullX = sdlEvent.wheel.integer_x,
+            .FullY = sdlEvent.wheel.integer_y
+        };
+        result.x = static_cast<int32_t>(mouseX);
+        result.y = static_cast<int32_t>(mouseY);
+
+        return result;
+    }
+
+    case SDL_EVENT_KEY_DOWN:
+    case SDL_EVENT_KEY_UP: {
+        InputAction action = InputAction::Release;
+
+        float mouseX = 0.0f;
+        float mouseY = 0.0f;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        result.x = mouseX;
+        result.y = mouseY;
+
+
+
+        if (sdlEvent.type == SDL_EVENT_KEY_DOWN) {
+            action = sdlEvent.key.repeat ? InputAction::Repeat : InputAction::Press;
+        }
+
+        char ch = 0;
+        if (sdlEvent.key.key >= 32 && sdlEvent.key.key <= 126) {
+            ch = static_cast<char>(sdlEvent.key.key);
+        }
+
+        result.data = KeyEvent{
+            .keyCode = static_cast<uint32_t>(sdlEvent.key.scancode),
+            .character = ch,
+            .action = action
+        };
+        return result;
+    }
+
+                      
+    case SDL_EVENT_TEXT_INPUT: {
+
+        float mouseX = 0.0f;
+        float mouseY = 0.0f;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        result.x = mouseX;
+        result.y = mouseY;
+
+        // SDL3 передает строку UTF-8 в sdlEvent.text.text.
+        // Для нашей структуры TextInputEvent (которая ждет char32_t) 
+        // возьмем первый символ (подходит для базовой латиницы/кириллицы).
+        // При необходимости здесь можно развернуть полный UTF-8 дельсер.
+        result.data = TextInputEvent{
+            .codepoint = static_cast<char32_t>(sdlEvent.text.text[0])
+        };
+        return result;
+    }
 
     default:
-        simEvent.Type = SimulationKeyEvent::SimulationKeyEventSymbol::SYMBOL;
-
-        if (keycode >= 32 && keycode <= 126)
-        {
-            simEvent.Symbol = static_cast<char>(keycode);
-        }
-        else
-        {
-            simEvent.Symbol = '\0';
-        }
         break;
     }
 
-    return simEvent;
+    return std::nullopt;
 }

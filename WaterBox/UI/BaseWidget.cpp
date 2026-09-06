@@ -1,7 +1,7 @@
 #include "BaseWidget.h"
 #include "RenderManager.h"
 
-bool BaseWidget::ProcessEvent(const ScreenEvent& event)
+bool BaseWidget::ProcessEvent(const in::InputEvent& event)
 {
 	for (auto& tec : Children)
 	{

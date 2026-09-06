@@ -4,6 +4,7 @@
 #include "Game/GameManager.h"
 #include "SDL3/SDL.h"
 #include "Game/SimulationTool.h"
+#include "InputEvent.h"
 
 GameViewWidget::GameViewWidget()
 {
@@ -88,42 +89,21 @@ void GameViewWidget::Render(RenderManager& renderer, const PrimitivePoint& Posit
     );
 }
 
-bool GameViewWidget::ProcessEvent(const ScreenEvent& event)
+bool GameViewWidget::ProcessEvent(const in::InputEvent& event)
 {
     auto& lock = RenderManager::GetLockEventState();
 
-    if (lock.first != this && ( event.Point.x >= SizeX || event.Point.y >= SizeY || event.ButtonType == ScreenEventButtonType::NO  ))
+    if (lock.first != this && ( event.x >= SizeX || event.y >= SizeY || event.isMouseButton()))
         return false;
  
-    auto& SimTool = GameManager::GetGameManager().GetSimulationTool();
-
-    SimulationMouseEvent Event;
-
+    auto& SimTool = GameManager::GetGameManager().GetSimulationTool();       
     auto MySize = GetSize();
     auto GameSize = GameManager::GetGameManager().GetSimulation().GetGameFieldSize();
 
-    int PosX = Event.X = event.Point.x * GameSize.first / MySize.x;
-    int PosY = Event.Y = event.Point.y * GameSize.second / MySize.y;
-    Event.State = event.Type == ScreenEventType::DOWN;
-    switch (event.ButtonType)
-    {
-    case ScreenEventButtonType::NO:
-        Event.Type = SimulationMouseEvent::SimulationMouseEventButton::NO;
-        break;
-    case ScreenEventButtonType::FINGER:
-        Event.Type = SimulationMouseEvent::SimulationMouseEventButton::LMB;
+    in::InputEvent NewEvent = event;
 
-        break;
-    case ScreenEventButtonType::LMB:
-        Event.Type = SimulationMouseEvent::SimulationMouseEventButton::LMB;
-
-        break;
-    case ScreenEventButtonType::RMB:
-        Event.Type = SimulationMouseEvent::SimulationMouseEventButton::RMB;
-        break;
-    default:
-        break;
-    }
+    int PosX = NewEvent.x = event.x * GameSize.first / MySize.x;
+    int PosY = NewEvent.y = event.y * GameSize.second / MySize.y;   
 
     PosX = std::max(PosX, 0);
     PosY = std::max(PosY, 0);
@@ -143,9 +123,9 @@ bool GameViewWidget::ProcessEvent(const ScreenEvent& event)
         int err = dx - dy;
 
         while (true) {
-            Event.X = OldX;
-            Event.Y = OldY;
-            SimTool.ProcessMouseEvent(Event);
+            NewEvent.x = OldX;
+            NewEvent.y = OldY;
+            SimTool.ProcessEvent(NewEvent);
 
             if (OldX == PosX && OldY == PosY) {
                 break;
@@ -166,14 +146,14 @@ bool GameViewWidget::ProcessEvent(const ScreenEvent& event)
     }
     else
     {
-        SimTool.ProcessMouseEvent(Event);
+        SimTool.ProcessEvent(NewEvent);
     }
 
 
    
 
 
-    if (event.Type == ScreenEventType::UP) { OldX = -1; OldY = -1; }
+    if (event.isMouseButton() && std::get <in::MouseButtonEvent> (event.data).action == in::InputAction::Release) { OldX = -1; OldY = -1; }
     else {OldX = PosX; OldY = PosY;}
 
     return true;

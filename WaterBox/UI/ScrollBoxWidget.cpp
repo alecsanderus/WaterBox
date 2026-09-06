@@ -3,7 +3,7 @@
 
 
 
-bool ScrollBoxWidget::ProcessEvent(const ScreenEvent& event) {
+bool ScrollBoxWidget::ProcessEvent(const in::InputEvent& event) {
     // 1. Обработка прокрутки колёсика мыши (Затычка/Логика)
     // TODO: Интегрируйте ваши типы событий ScreenEvent (например, event.type == EventType::MouseWheel)
   /*

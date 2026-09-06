@@ -1,5 +1,6 @@
 #include "ButtonWidget.h"
 #include "RenderManager.h"
+#include "InputEvent.h"
 
 void ButtonWidget::Render(RenderManager& renderer, const PrimitivePoint & Position)
 {
@@ -20,16 +21,17 @@ PrimitivePoint ButtonWidget::GetSize()
 
 }
 
-bool ButtonWidget::ProcessEvent(const ScreenEvent& event)
+bool ButtonWidget::ProcessEvent(const in::InputEvent& event)
 {
-	if (!MyTriggerZone.Contains(event.Point))
+	if (!MyTriggerZone.Contains(PrimitivePoint (event.x, event.y)))
 		return false;
 
-	if (event.Type != ScreenEventType::UP || event.ButtonType != ScreenEventButtonType::LMB)
+	if (!event.isMouseButton())
 		return true;
 
-
-
+	if (auto& ButEvent = std::get <in::MouseButtonEvent> (event.data);
+		ButEvent.action != in::InputAction::Press || ButEvent.button != in::MouseButton::Left)
+		return true;
 
 	return Callback ();
 }
