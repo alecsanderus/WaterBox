@@ -35,7 +35,7 @@ endfunction()
 
 # Цель 1: С консолью
 add_executable(WaterBoxConsole ${WATERBOX_SOURCES})
-target_link_libraries(WaterBoxConsole PRIVATE SDL3::SDL3 nlohmann_json::nlohmann_json)
+target_link_libraries(WaterBoxConsole PRIVATE SDL3::SDL3 nlohmann_json::nlohmann_json SDL3_ttf::SDL3_ttf)
 target_include_directories(WaterBoxConsole PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 copy_game_files (WaterBoxConsole)
 
@@ -43,7 +43,7 @@ target_compile_definitions (WaterBoxConsole PRIVATE ENABLE_CONSOLE)
 
 # Цель 2: Без консоли
 add_executable(WaterBox WIN32 ${WATERBOX_SOURCES})
-target_link_libraries(WaterBox PRIVATE SDL3::SDL3 nlohmann_json::nlohmann_json)
+target_link_libraries(WaterBox PRIVATE SDL3::SDL3 nlohmann_json::nlohmann_json SDL3_ttf::SDL3_ttf)
 target_include_directories(WaterBox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 copy_game_files (WaterBox)
 

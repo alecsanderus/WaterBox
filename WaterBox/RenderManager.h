@@ -5,6 +5,7 @@
 
 union SDL_Event;
 namespace in { struct InputEvent; }
+class RenderManager;
 
 
 struct ScreenInfoStruct
@@ -23,18 +24,25 @@ enum class EventFocusType : uint8_t
 	Unlock
 };
 
+struct ColorStr{uint8_t r, g, b, a;};
+
+struct TextInstance
+{	
+	void Init(RenderManager& manager, const std::string text, const ColorStr color);
+	void Draw(RenderManager& manager, const PrimitivePoint point);
+	void ChangeColor(const ColorStr color);
+	void ChangeText(const std::string text);
+	TextInstance(const TextInstance&) = delete;
+	TextInstance& operator=(const TextInstance&) = delete;
+	TextInstance() = default;
+	~TextInstance();
+private:
+	struct TTF_Text* TextTtf = nullptr;
+};
+
 
 class RenderManager
 {
-
-private:
-
-	struct SDL_Window* window = nullptr;
-	struct SDL_Renderer* renderer = nullptr;
-	bool NeedToDestroyWindow = false;
-	void UpdateScreenInfo();
-
-
 public:
 	RenderManager();
 	~RenderManager();
@@ -61,8 +69,27 @@ public:
 	BaseWidget* FocusedWidget = nullptr;
 	EventFocusType FocusedWidgetType = EventFocusType::NO;
 
-	void SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha = 255);
+	void SetColor(ColorStr color);
 	void DrawRect(struct PrimitiveRect Rect);
 	void SetClipRect(const PrimitiveRect* rect);
 	void GetClipRect(PrimitiveRect& outRect);
+
+	void FastDrawText(std::string text, ColorStr color, PrimitivePoint point);
+
+
+
+private:
+	struct SDL_Window* window = nullptr;
+	struct SDL_Renderer* renderer = nullptr;
+	bool NeedToDestroyWindow = false;
+	void UpdateScreenInfo();
+	
+
+	struct TTF_TextEngine* TextEngine = nullptr;
+	struct TTF_Font* TextFont;
+	void CheckTextMap();
+
+	std::unordered_map <std::string, std::pair <TextInstance, int64_t>> TextMap;
+
+	friend TextInstance;
 };

@@ -9,7 +9,7 @@ void ButtonWidget::Render(RenderManager& renderer, const PrimitivePoint & Positi
 	auto Size = MySize.GetNormalizedPoint();
 	PrimitiveRect rect{Position, Size};
 
-	renderer.SetColor(r, 100, 100);
+	renderer.SetColor({ r, 100, 100 });
 	renderer.DrawRect(rect);
 
 	MyTriggerZone = rect;

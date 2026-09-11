@@ -1,5 +1,6 @@
 #include "RenderManager.h"
 #include <SDL3/SDL.h>
+#include "SDL3_ttf/SDL_ttf.h"
 #include "WaterBox.h"
 #include "UI/MainUIWidget.h"
 #include "UI/ScreenPositionContainers.h"
@@ -41,6 +42,12 @@ bool RenderManager::Init()
         return false;
     }
 
+    if (!TTF_Init()) {
+        LOG_FATAL("SDL_Init failed"); 
+        LOG_FATAL(SDL_GetError());
+        return false;
+    }
+
     window = SDL_CreateWindow(
         "WaterBox",
         1000, 600,
@@ -51,6 +58,7 @@ bool RenderManager::Init()
         LOG_FATAL("Window creation failed : ");
         LOG_FATAL(SDL_GetError());      
         SDL_Quit();
+        TTF_Quit();
         return false;
     }
 
@@ -60,13 +68,30 @@ bool RenderManager::Init()
         LOG_FATAL(SDL_GetError());       
         SDL_DestroyWindow(window);
         SDL_Quit();
+        TTF_Quit();
         return false;
     }
     SDL_SetRenderVSync(renderer, 1);
 
     LOG_INFO ("Window created");
 
+    
+
+    TextFont = TTF_OpenFont( (std::string (GlobalPathPrefix) + "GameSerif.ttf").c_str(), 24);    
+    if (!TextFont) {
+        LOG_FATAL("Cant load serif");
+        LOG_FATAL(SDL_GetError());
+    }
+
     UpdateScreenInfo();
+
+    TextEngine = TTF_CreateRendererTextEngine(renderer);
+ 
+
+    if (!TextEngine) {        
+        LOG_FATAL("Cant create RendererTextEngine");
+        LOG_FATAL(SDL_GetError());
+    }
 
     NeedToDestroyWindow = true;
 
@@ -84,8 +109,11 @@ bool RenderManager::Render()
 
     MainWidget.Render(*this, {0,0});
 
+    FastDrawText("Brdysh выааощыагыф", { 255,0,255,255 }, { 100,100 });
+
     SDL_RenderPresent(renderer);
 
+   
     return true;
 }
 
@@ -146,9 +174,9 @@ bool RenderManager::ProcessEvent(const SDL_Event& EventSDL)
 }
 
 
-void RenderManager::SetColor(uint8_t r, uint8_t g, uint8_t b, uint8_t alpha)
+void RenderManager::SetColor(ColorStr color)
 {
-    SDL_SetRenderDrawColor(renderer, r, g, b, alpha);
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 }
 
 void RenderManager::DrawRect(PrimitiveRect Rect)
@@ -192,6 +220,27 @@ void RenderManager::GetClipRect(PrimitiveRect& outRect)
     outRect.size.y = sdlRect.h;
 }
 
+void RenderManager::FastDrawText(std::string text, ColorStr color, PrimitivePoint point)
+{
+    auto it = TextMap.find(text);
+    TextInstance* text_obj = nullptr;
+    auto time = SDL_GetTicks();
+
+    if (it != TextMap.end()) {
+        it->second.second = time;
+        text_obj = &it->second.first;
+    }
+    else {
+        auto& cell = TextMap[text];
+        text_obj = &cell.first;
+        cell.second = time;
+
+        text_obj->Init(*this, text, color);        
+    }
+
+    text_obj->Draw(*this, point);
+}
+
 void RenderManager::UpdateScreenInfo()
 {
     int w, h;
@@ -202,6 +251,16 @@ void RenderManager::UpdateScreenInfo()
 
     ScreenInfo->ScreenSizeX = w;
     ScreenInfo->ScreenSizeY = h;
+
+    TTF_SetFontSize(TextFont, h * 0.04);    
+}
+
+void RenderManager::CheckTextMap()
+{
+    auto time = SDL_GetTicks();
+    std::erase_if(TextMap, [time](const auto& pair) {
+        return pair.second.second + 10000 <= time;
+        });
 }
 
 std::optional<in::InputEvent> RenderManager::TranslateSDLEvent(const SDL_Event& sdlEvent) {
@@ -322,3 +381,20 @@ std::optional<in::InputEvent> RenderManager::TranslateSDLEvent(const SDL_Event& 
 
     return std::nullopt;
 }
+
+void TextInstance::Init(RenderManager& manager, const std::string text, const ColorStr color)
+{
+    TextTtf = TTF_CreateText(manager.TextEngine, manager.TextFont, text.c_str(), 0);
+    TTF_SetTextColor(TextTtf, color.r, color.g, color.b, color.a);
+}
+
+void TextInstance::Draw(RenderManager& manager, const PrimitivePoint point)
+{    TTF_DrawRendererText(TextTtf, point.x, point.y);}
+
+void TextInstance::ChangeColor(const ColorStr color)
+{TTF_SetTextColor(TextTtf, color.r, color.g, color.b, color.a);}
+void TextInstance::ChangeText(const std::string text)
+{TTF_SetTextString(TextTtf, text.c_str(), 0);}
+
+TextInstance::~TextInstance()
+{if (TextTtf) TTF_DestroyText(TextTtf);}
