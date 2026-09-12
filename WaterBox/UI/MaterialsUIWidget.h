@@ -8,7 +8,7 @@
 class MaterialsUIWidget : public BaseWidget 
 {
 public:
-    void Init();
+    void Init(RenderManager* manager);
     void CheckSize(const PrimitivePoint& Size);
 
 protected:
@@ -17,4 +17,6 @@ protected:
     class GridBoxWidget* TopGridBox = nullptr;
     class ScrollBoxWidget* ScrollBox = nullptr;
     class GridBoxWidget* BottomGridBox = nullptr;
+
+    std::vector <class MaterialCardWidget*> MaterialWidgets;
 };

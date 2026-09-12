@@ -75,3 +75,20 @@ struct ScreenRect
 	friend ScreenRect operator-(const ScreenRect& a, const ScreenRect& b);
 };
 
+
+
+struct ScreenInfoStruct
+{
+	int ScreenSizeX = 1920;
+	int ScreenSizeY = 1080;
+};
+
+
+enum class EventFocusType : uint8_t
+{
+	NO,
+	OK,
+	Lock,
+	Lock_AutoUnlock,
+	Unlock
+};

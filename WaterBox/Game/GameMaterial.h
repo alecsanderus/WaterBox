@@ -1,11 +1,5 @@
 #pragma once
-
-
-struct PixelColor
-{
-	uint8_t R = 0, G = 0, B = 255;
-};
-
+#include "UI/ColorContainer.h"
 
 struct GameMaterial
 {
@@ -15,7 +9,7 @@ struct GameMaterial
 
 	std::string CategoryID;
 	bool CanBeShown = true;
-	PixelColor MinColor, MaxColor;
+	ColorStr MinColor, MaxColor;
 	bool KeepColorProportions = true;
 };
 
@@ -26,5 +20,5 @@ struct MaterialCategory
 	bool IsLoaded = false;
 
 	bool CanBeShown = true;
-	PixelColor Color;
+	ColorStr Color;
 };

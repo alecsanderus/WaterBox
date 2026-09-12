@@ -36,13 +36,14 @@ const GameMaterial& GameConfigManager::GetMaterial(int ID)
     if (!AreMaterialsLoaded)
     {
         LOG_FATAL("Materials are not loaded yet");
-        return { .MinColor = {0,0,0}, .MaxColor = {255,255,255}, .KeepColorProportions = false };
+       
+        return DefaultMaterial;
     }
 
     if (ID < Materials.size())
         return Materials[ID];
     else
-        return { .MinColor = {0,0,0}, .MaxColor = {255,255,255}, .KeepColorProportions = false };
+        return DefaultMaterial;
 }
 
 void GameConfigManager::LoadConfig()
@@ -87,13 +88,13 @@ bool GameConfigManager::LoadMaterials(std::string FileName)
                 TecMat.CanBeShown = item.value <bool>("can_be_shown", true);
                 TecMat.KeepColorProportions = item.value <bool>("keep_color_proportions", true);
 
-                TecMat.MaxColor.R = item.value <int>("color_Max_R", 0);
-                TecMat.MaxColor.G = item.value <int>("color_Max_G", 0);
-                TecMat.MaxColor.B = item.value <int>("color_Max_B", 0);
+                TecMat.MaxColor.r = item.value <int>("color_Max_R", 0);
+                TecMat.MaxColor.g = item.value <int>("color_Max_G", 0);
+                TecMat.MaxColor.b = item.value <int>("color_Max_B", 0);
 
-                TecMat.MinColor.R = item.value <int>("color_Min_R", 0);
-                TecMat.MinColor.G = item.value <int>("color_Min_G", 0);
-                TecMat.MinColor.B = item.value <int>("color_Min_B", 0);
+                TecMat.MinColor.r = item.value <int>("color_Min_R", 0);
+                TecMat.MinColor.g = item.value <int>("color_Min_G", 0);
+                TecMat.MinColor.b = item.value <int>("color_Min_B", 0);
             }
         }
         if (json.contains("Categories") && json["Categories"].is_array()) {
@@ -112,9 +113,9 @@ bool GameConfigManager::LoadMaterials(std::string FileName)
 
                 TecCat.CanBeShown = item.value <bool>("can_be_shown", true);
 
-                TecCat.Color.R = item.value <int>("color_R", 0);
-                TecCat.Color.G = item.value <int>("color_G", 0);
-                TecCat.Color.B = item.value <int>("color_B", 0);
+                TecCat.Color.r = item.value <int>("color_R", 0);
+                TecCat.Color.g = item.value <int>("color_G", 0);
+                TecCat.Color.b = item.value <int>("color_B", 0);
             }
         }
 

@@ -34,5 +34,8 @@ private:
 	template <typename T>
 	int GetArrayIndex(const std::string& ID, std::vector <T>& elements, std::unordered_map <std::string, int>& NamesMap);
 
+	const GameMaterial DefaultMaterial = { .MinColor = {0,0,0}, .MaxColor = {255,255,255}, .KeepColorProportions = false };
+
 	const std::string MaterialsFileName = "Materials.json";
+
 };

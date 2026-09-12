@@ -21,5 +21,19 @@ void BaseWidget::Render(RenderManager& renderer, const PrimitivePoint& Position)
 
 PrimitivePoint BaseWidget::GetSize()
 {
-	return PrimitivePoint(0,0);
+	PrimitivePoint max = { 0,0 };
+	for (auto& el : Children)
+	{
+		auto tec = el->GetSize();
+		max.x = std::max(max.x, tec.x);
+		max.y = std::max(max.y, tec.y);
+
+	}
+	return max;
 }
+
+void BaseWidget::OnChildAdded(BaseWidget* widget)
+{
+}
+
+

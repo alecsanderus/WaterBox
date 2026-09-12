@@ -13,13 +13,10 @@ public:
 	virtual bool ProcessEvent(const in::InputEvent& event) override;
 
 	virtual void SetOnClick(ClickCallback callback);
-
-	uint8_t r = 255;
-
 protected:
 
 	virtual bool Callback();
-	ScreenPoint MySize = { 300,150, true, false , 0, 0, KeepRatioAxis::KeepY };
+	ScreenPoint MyMinSize = { 0,0, true, false , 0, 0, KeepRatioAxis::KeepY };
 	PrimitiveRect MyTriggerZone;
 	ClickCallback OnClick;
 };

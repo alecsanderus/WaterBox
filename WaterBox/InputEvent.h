@@ -70,8 +70,8 @@ namespace in
             TextInputEvent
         > data;
 
-        KeyModifiers modifiers;
-        int x, y;
+        KeyModifiers modifiers = KeyModifiers::None;
+        int x = 0, y = 0;
    
         bool isMouseMove() const { return data.index() == 0; }
         bool isMouseButton() const { return data.index() == 1; }

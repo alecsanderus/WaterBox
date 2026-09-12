@@ -41,15 +41,12 @@ private:
 };
 
 
-
-PixelColor GetRandomColor(const GameMaterial& material);
-
 struct GameCell
 {	
 	void Create(int ID);
 	void Destroy();
 
-	PixelColor Color;
+	ColorStr Color;
 	uint16_t OriginalMaterialID = 0;
 	int16_t temp = 20;
 	bool Active = 0;

@@ -50,9 +50,9 @@ void GameViewWidget::UpdateTexture()
         const auto& color = Grid[tec].Color;
 
         Pixels[tec] =
-            (static_cast<uint32_t>(color.R) << 24) |
-            (static_cast<uint32_t>(color.G) << 16) |
-            (static_cast<uint32_t>(color.B) << 8) |
+            (static_cast<uint32_t>(color.r) << 24) |
+            (static_cast<uint32_t>(color.g) << 16) |
+            (static_cast<uint32_t>(color.b) << 8) |
             static_cast<uint32_t>(255);
     }
 

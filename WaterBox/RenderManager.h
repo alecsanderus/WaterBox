@@ -1,6 +1,8 @@
 #pragma once
 #include "UI/MainUIWidget.h"
 #include <optional>
+#include "UI/ScreenPositionContainers.h"
+#include "UI/ColorContainer.h"
 
 
 union SDL_Event;
@@ -8,37 +10,7 @@ namespace in { struct InputEvent; }
 class RenderManager;
 
 
-struct ScreenInfoStruct
-{
-	int ScreenSizeX = 1920;
-	int ScreenSizeY = 1080;
-};
 
-
-enum class EventFocusType : uint8_t
-{
-	NO,
-	OK,
-	Lock,
-	Lock_AutoUnlock,
-	Unlock
-};
-
-struct ColorStr{uint8_t r, g, b, a;};
-
-struct TextInstance
-{	
-	void Init(RenderManager& manager, const std::string text, const ColorStr color);
-	void Draw(RenderManager& manager, const PrimitivePoint point);
-	void ChangeColor(const ColorStr color);
-	void ChangeText(const std::string text);
-	TextInstance(const TextInstance&) = delete;
-	TextInstance& operator=(const TextInstance&) = delete;
-	TextInstance() = default;
-	~TextInstance();
-private:
-	struct TTF_Text* TextTtf = nullptr;
-};
 
 
 class RenderManager
@@ -74,7 +46,7 @@ public:
 	void SetClipRect(const PrimitiveRect* rect);
 	void GetClipRect(PrimitiveRect& outRect);
 
-	void FastDrawText(std::string text, ColorStr color, PrimitivePoint point);
+	void FastDrawText(const std::string& text, ColorStr color, PrimitivePoint point);
 
 
 
@@ -86,10 +58,24 @@ private:
 	
 
 	struct TTF_TextEngine* TextEngine = nullptr;
-	struct TTF_Font* TextFont;
+	struct TTF_Font* TextFont = nullptr;
 	void CheckTextMap();
 
-	std::unordered_map <std::string, std::pair <TextInstance, int64_t>> TextMap;
 
-	friend TextInstance;
+
+
+
+
+
+	struct StringIntPairHash {
+		std::size_t operator()(const std::pair<std::string, uint32_t>& p) const {
+			std::size_t h1 = std::hash<std::string>{}(p.first);
+			std::size_t h2 = std::hash<uint32_t>{}(p.second);
+			return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
+		}
+	};
+
+	std::unordered_map <std::pair <std::string, uint32_t>, std::pair <struct TextInstance, int64_t>, StringIntPairHash> TextMap;
+
+	friend struct TextInstance;
 };

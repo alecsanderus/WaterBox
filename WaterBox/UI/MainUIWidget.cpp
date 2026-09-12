@@ -6,23 +6,18 @@
 #include "RenderManager.h"
 #include "InputEvent.h"
 
-void MainUIWidget::Init()
+void MainUIWidget::Init(RenderManager* renderer)
 {
 	Children.clear();
 
-	Children.emplace_back(std::make_unique <HorizontalBoxWidget> ());
-	MainHorizontalBox = static_cast  <HorizontalBoxWidget*> (Children[0].get());
+	MainHorizontalBox = AddChild<HorizontalBoxWidget> ();
 
-	MainHorizontalBox->Children.emplace_back(std::make_unique <GameViewWidget>());
-
-
-	MainHorizontalBox->Children.emplace_back(std::make_unique <ToolsUIWidget>());
-	MainToolsBox = static_cast  <ToolsUIWidget*> (MainHorizontalBox->Children[1].get());
+	MainHorizontalBox->AddChild<GameViewWidget>();
 	
-
-	MainHorizontalBox->Children.emplace_back(std::make_unique <MaterialsUIWidget>());
-	MainMaterialsWidget = static_cast  <MaterialsUIWidget*> (MainHorizontalBox->Children[2].get());
-	MainMaterialsWidget->Init();
+	MainToolsBox = MainHorizontalBox->AddChild <ToolsUIWidget>();
+	
+	MainMaterialsWidget = MainHorizontalBox->AddChild<MaterialsUIWidget>();
+	MainMaterialsWidget->Init(renderer);
 }
 
 

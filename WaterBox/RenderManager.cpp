@@ -7,6 +7,7 @@
 #include "Game/SimulationTool.h"
 #include "Game/GameManager.h"
 #include "InputEvent.h"
+#include "UI/TextInstance.h"
 
 
 
@@ -96,7 +97,7 @@ bool RenderManager::Init()
     NeedToDestroyWindow = true;
 
   
-    MainWidget.Init();
+    MainWidget.Init(this);
 
     return true;
 }
@@ -108,8 +109,6 @@ bool RenderManager::Render()
     SDL_RenderClear(renderer);    
 
     MainWidget.Render(*this, {0,0});
-
-    FastDrawText("Brdysh выааощыагыф", { 255,0,255,255 }, { 100,100 });
 
     SDL_RenderPresent(renderer);
 
@@ -220,25 +219,17 @@ void RenderManager::GetClipRect(PrimitiveRect& outRect)
     outRect.size.y = sdlRect.h;
 }
 
-void RenderManager::FastDrawText(std::string text, ColorStr color, PrimitivePoint point)
+
+void RenderManager::FastDrawText(const std::string& text, ColorStr color, PrimitivePoint point)
 {
-    auto it = TextMap.find(text);
-    TextInstance* text_obj = nullptr;
-    auto time = SDL_GetTicks();
+    auto [iterator, inserted] = TextMap.try_emplace({ text,color.PackColor()});
+    auto cell = &iterator->second;   
 
-    if (it != TextMap.end()) {
-        it->second.second = time;
-        text_obj = &it->second.first;
-    }
-    else {
-        auto& cell = TextMap[text];
-        text_obj = &cell.first;
-        cell.second = time;
-
-        text_obj->Init(*this, text, color);        
-    }
-
-    text_obj->Draw(*this, point);
+    if (inserted)    
+        cell->first.Init(*this, text, color);        
+    
+    cell->second = SDL_GetTicks();
+    cell->first.Draw(*this, point);
 }
 
 void RenderManager::UpdateScreenInfo()
@@ -257,10 +248,15 @@ void RenderManager::UpdateScreenInfo()
 
 void RenderManager::CheckTextMap()
 {
+    static uint64_t LastTime = 0;
     auto time = SDL_GetTicks();
-    std::erase_if(TextMap, [time](const auto& pair) {
-        return pair.second.second + 10000 <= time;
-        });
+    if (time >= LastTime + 1000)
+    {
+        LastTime = time;
+        std::erase_if(TextMap, [time](const auto& pair) {
+            return pair.second.second + 10000 <= time;
+            });
+    }
 }
 
 std::optional<in::InputEvent> RenderManager::TranslateSDLEvent(const SDL_Event& sdlEvent) {
@@ -382,19 +378,3 @@ std::optional<in::InputEvent> RenderManager::TranslateSDLEvent(const SDL_Event& 
     return std::nullopt;
 }
 
-void TextInstance::Init(RenderManager& manager, const std::string text, const ColorStr color)
-{
-    TextTtf = TTF_CreateText(manager.TextEngine, manager.TextFont, text.c_str(), 0);
-    TTF_SetTextColor(TextTtf, color.r, color.g, color.b, color.a);
-}
-
-void TextInstance::Draw(RenderManager& manager, const PrimitivePoint point)
-{    TTF_DrawRendererText(TextTtf, point.x, point.y);}
-
-void TextInstance::ChangeColor(const ColorStr color)
-{TTF_SetTextColor(TextTtf, color.r, color.g, color.b, color.a);}
-void TextInstance::ChangeText(const std::string text)
-{TTF_SetTextString(TextTtf, text.c_str(), 0);}
-
-TextInstance::~TextInstance()
-{if (TextTtf) TTF_DestroyText(TextTtf);}

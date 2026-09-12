@@ -4,7 +4,7 @@
 class MainUIWidget : public BaseWidget
 {
 public:
-	void Init();
+	void Init(RenderManager* renderer);
 	virtual void Render(RenderManager& renderer, const PrimitivePoint& Position) override;
 
 	virtual bool ProcessEvent(const in::InputEvent& event) override;

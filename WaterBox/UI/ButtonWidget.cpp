@@ -4,21 +4,16 @@
 
 void ButtonWidget::Render(RenderManager& renderer, const PrimitivePoint & Position)
 {
-	BaseWidget::Render(renderer, Position);
-
-	auto Size = MySize.GetNormalizedPoint();
-	PrimitiveRect rect{Position, Size};
-
-	renderer.SetColor({ r, 100, 100 });
-	renderer.DrawRect(rect);
-
-	MyTriggerZone = rect;
+	BaseWidget::Render(renderer, Position);	
+	MyTriggerZone = {Position, GetSize() };
 }
 
 PrimitivePoint ButtonWidget::GetSize()
 {
-	return 	MySize.GetNormalizedPoint();
+	auto siz = MyMinSize.GetNormalizedPoint();
+	auto siz2 = BaseWidget::GetSize();
 
+	return {std::max (siz.x, siz2.x), std::max(siz.y, siz2.y) };
 }
 
 bool ButtonWidget::ProcessEvent(const in::InputEvent& event)
