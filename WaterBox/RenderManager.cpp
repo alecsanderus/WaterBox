@@ -76,6 +76,10 @@ bool RenderManager::Init()
 
     LOG_INFO ("Window created");
 
+#ifdef __ANDROID__
+    SDL_SetWindowFullscreen(window, true);
+#endif 
+
     
 
     TextFont = TTF_OpenFont( (std::string (GlobalPathPrefix) + "GameSerif.ttf").c_str(), 24);    
@@ -104,7 +108,6 @@ bool RenderManager::Init()
 
 bool RenderManager::Render()
 {
-    // Очистка экрана синим цветом (R, G, B, A)
     SDL_SetRenderDrawColor(renderer, 100, 100, 255, 255);
     SDL_RenderClear(renderer);    
 

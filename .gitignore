@@ -96,3 +96,5 @@ android/captures/
 
 !third_party/
 !third_party/**
+
+android/WaterBox/.cxx/
