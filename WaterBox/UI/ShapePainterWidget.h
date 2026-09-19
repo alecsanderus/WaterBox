@@ -11,6 +11,10 @@ public:
 	bool AutoSizeAsBackground = false;
 	ScreenPoint Size;
 	ColorStr Color;
+
+	ScreenPoint ContourSize;
+	ColorStr ContourColor;
+	bool DrawContour = false;
 	
 
 protected:

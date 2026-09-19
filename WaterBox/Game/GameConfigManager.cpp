@@ -46,9 +46,37 @@ const GameMaterial& GameConfigManager::GetMaterial(int ID)
         return DefaultMaterial;
 }
 
+int GameConfigManager::GetCategoryIndex(std::string Name)
+{
+    auto ptr = CategoriesLookupMap.find(Name);
+    if (ptr != CategoriesLookupMap.end())
+        return ptr->second;
+    else
+        return 0;
+}
+
+const MaterialCategory& GameConfigManager::GetCategory(int ID)
+{
+    if (!AreMaterialsLoaded)
+        LoadConfig();
+
+    if (!AreMaterialsLoaded)
+    {
+        LOG_FATAL("Categories are not loaded yet");
+
+        return DefaultCategory;
+    }
+
+    if (ID < Categories.size())
+        return Categories[ID];
+    else
+        return DefaultCategory;
+}
+
 void GameConfigManager::LoadConfig()
 {
     bool OK = LoadMaterials(MaterialsFileName);
+    LoadLocalization("ru");
 
     AreMaterialsLoaded = OK;
 
@@ -85,6 +113,7 @@ bool GameConfigManager::LoadMaterials(std::string FileName)
 
                 TecMat.CategoryID = GetArrayIndex(item["category_key"].get <std::string>(), Categories, CategoriesLookupMap);
 
+                TecMat.ShowPriority = item.value <int>("show_priority", 0);
                 TecMat.CanBeShown = item.value <bool>("can_be_shown", true);
                 TecMat.KeepColorProportions = item.value <bool>("keep_color_proportions", true);
 
@@ -129,6 +158,58 @@ bool GameConfigManager::LoadMaterials(std::string FileName)
     }
 
     return true;
+}
+
+std::string GameConfigManager::GetString(std::string key)
+{
+    auto it = Localization.find (key);
+    if (it != Localization.end())
+        return it->second;
+    else
+        return key;
+}
+
+
+
+void GameConfigManager::LoadLocalization(std::string FileName)
+{
+    size_t fileSize = 0;
+    std::string FullFileName = GlobalPathPrefix + FileName + ".json";
+
+    char* fileData = (char*)SDL_LoadFile(FullFileName.c_str(), &fileSize);
+
+    if (!fileData) {
+        std::string error = "Cant read file name:  " + FullFileName + "  , SDL3 error : " + std::string(SDL_GetError());
+        LOG_ERROR(error);
+        return;
+    }
+
+    try {
+        auto json = nlohmann::json::parse(fileData);
+
+        SDL_free(fileData);
+
+        if (json.is_object()) {
+
+            for (const auto& [key, value] : json.items()) {
+
+                if (value.is_string()) 
+                    Localization[key] = value.get<std::string>();
+               
+                else                  
+                    Localization[key] = value.dump();
+                
+            }
+        }
+      
+        LOG_INFO("Localization loaded from" + FullFileName);
+    }
+    catch (const nlohmann::json::parse_error& e) {
+        std::string err = "Cant parse  " + FullFileName + "  JSON: " + std::string(e.what());
+        LOG_ERROR(err);
+        SDL_free(fileData);
+        return;
+    }
 }
 
 template <typename T>

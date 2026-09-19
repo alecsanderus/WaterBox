@@ -6,6 +6,7 @@
       "name": "main:bedrock",
       "can_be_shown": true,
       "category_key": "main:solids",
+      "show_priority": 999,
       "keep_color_proportions": true,
       "color_Max_R": 113,
       "color_Max_G": 113,
@@ -18,6 +19,7 @@
       "name": "main:gold_ore",
       "can_be_shown": true,
       "category_key": "main:solids",
+      "show_priority": 10,
       "keep_color_proportions": false,
       "color_Max_R": 255,
       "color_Max_G": 215,
@@ -25,6 +27,19 @@
       "color_Min_R": 140,
       "color_Min_G": 105,
       "color_Min_B": 10
+    },
+    {
+      "name": "main:water",
+      "can_be_shown": true,
+      "category_key": "main:liquids",
+      "show_priority": 999,
+      "keep_color_proportions": true,
+      "color_Max_R": 65,
+      "color_Max_G": 105,
+      "color_Max_B": 225,
+      "color_Min_R": 28,
+      "color_Min_G": 107,
+      "color_Min_B": 160
     }
   ],
 
@@ -32,9 +47,18 @@
     {
       "name": "main:solids",
       "can_be_shown": true,
+      "show_priority": 999,
       "color_R": 100,
       "color_G": 100,
       "color_B": 100
+    },
+    {
+      "name": "main:liquids",
+      "can_be_shown": true,
+      "show_priority": 998,
+      "color_R": 41,
+      "color_G": 128,
+      "color_B": 185
     }
   ]
 

@@ -72,6 +72,7 @@ bool RenderManager::Init()
         TTF_Quit();
         return false;
     }
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_SetRenderVSync(renderer, 1);
 
     LOG_INFO ("Window created");

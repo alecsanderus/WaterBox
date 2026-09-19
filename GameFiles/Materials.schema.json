@@ -35,6 +35,10 @@
             "type": "string",
             "description": "Materials category"
           },
+          "show_priority": {
+            "type": "integer",
+            "description": "Display priority in the materials table"
+          },
           "keep_color_proportions": {
             "type": "boolean",
             "description": "Keep RGB proportions when selecting a random color"
@@ -88,6 +92,10 @@
           "can_be_shown": {
             "type": "boolean",
             "description": "Must show this category in the material table"
+          },
+          "show_priority": {
+            "type": "integer",
+            "description": "Display priority in the materials table"
           },
           "color_R": {
             "$ref": "#/$defs/colorComponent",

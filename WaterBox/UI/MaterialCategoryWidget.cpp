@@ -1,4 +1,4 @@
-#include "MaterialCardWidget.h"
+#include "MaterialCategoryWidget.h"
 #include "Game/GameConfigManager.h"
 #include "ButtonWidget.h"
 #include "TextWidget.h"
@@ -7,10 +7,11 @@
 #include "RenderManager.h"
 #include "ShapePainterWidget.h"
 #include "SizeBoxWidget.h"
+#include "TabsBoxWidget.h"
 
-void MaterialCardWidget::Init(class RenderManager* manager, int ID)
+void MaterialCategoryWidget::Init(RenderManager* manager, int ID, TabsBoxWidget* tabs, int TabsID)
 {
-	auto& mat = GameConfigManager::GetGameConfigManager().GetMaterial(ID);
+	auto& cat = GameConfigManager::GetGameConfigManager().GetCategory(ID);
 
 	Children.clear();
 
@@ -18,22 +19,21 @@ void MaterialCardWidget::Init(class RenderManager* manager, int ID)
 	background = but->AddChild <ShapePainterWidget>();
 	sizeBox = background->AddChild <SizeBoxWidget>();
 	text = sizeBox->AddChild <TextWidget>();
-	
 
-	
 
-	auto BackgroundColor = ColorStr::GetAverageColor(mat.MinColor, mat.MaxColor);
 
-	background->Color = BackgroundColor;
+
+
+	background->Color = cat.Color;
 	background->AutoSizeAsBackground = true;
 
 	background->ContourColor = ActiveButtonColor;
-	background->ContourSize = { .x = ContourX, .y = ContourY, .IsVirtualCoordinates = true,.ratioMode = KeepRatioAxis::KeepY};
+	background->ContourSize = { .x = ContourX, .y = ContourY, .IsVirtualCoordinates = true,.ratioMode = KeepRatioAxis::KeepY };
 
-	text->Init(*manager, GameConfigManager::GetGameConfigManager().GetString(mat.Name), ColorStr::GetContrastColor(BackgroundColor));
+	text->Init(*manager, GameConfigManager::GetGameConfigManager().GetString(cat.Name), ColorStr::GetContrastColor(cat.Color));
 
 	auto bcg = background;
-	but->SetOnClick([bcg, ID]() 
+	but->SetOnClick([bcg, TabsID, tabs]() 
 		{
 			static ShapePainterWidget* lastActive = nullptr;
 
@@ -42,23 +42,26 @@ void MaterialCardWidget::Init(class RenderManager* manager, int ID)
 			lastActive = bcg;
 
 			bcg->DrawContour = true;
-			GameManager::GetGameManager().GetSimulationTool().SetMaterial(ID); 
+
+			tabs->SetPosition(TabsID); 
+
 		}
 	);
 
 	sizeBox->ModifyX = true;
 	sizeBox->ModifyY = true;
 
-	sizeBox->Size = { .x = OffsetX, .y = OffsetY, .IsVirtualCoordinates = true};
-	
+	sizeBox->Size = { .x = OffsetX, .y = OffsetY, .IsVirtualCoordinates = true };
+
 }
 
-void MaterialCardWidget::SetWidth(int width)
+void MaterialCategoryWidget::SetWidth(int width)
 {
 	text->SetWrapping(width);
 }
 
-void MaterialCardWidget::MakeClick()
+void MaterialCategoryWidget::MakeClick()
 {
 	if (but) but->Callback();
 }
+

@@ -2,10 +2,10 @@
 #include "BaseWidget.h"
 #include "Game/GameMaterial.h"
 
-class MaterialCardWidget : public BaseWidget
+class MaterialCategoryWidget : public BaseWidget
 {
 public:
-	void Init(class RenderManager* manager, int ID);
+	void Init(RenderManager* manager, int ID, class TabsBoxWidget* tabs, int TabsID);
 	void SetWidth(int width);
 
 
@@ -14,7 +14,6 @@ public:
 	int ContourX = 8, ContourY = 6;
 
 	void MakeClick();
-
 protected:
 	class TextWidget* text = nullptr;
 	class ButtonWidget* but = nullptr;

@@ -7,7 +7,8 @@ struct GameMaterial
 	int ID = 0;
 	bool IsLoaded = false;
 
-	std::string CategoryID;
+	int ShowPriority = 0;
+	int CategoryID;
 	bool CanBeShown = true;
 	ColorStr MinColor, MaxColor;
 	bool KeepColorProportions = true;

@@ -48,7 +48,7 @@ void ScrollBoxWidget::Render(RenderManager& renderer, const PrimitivePoint& Posi
         .pos = Position,
         .size = mySize       
     };
-    renderer.SetClipRect(&newClipRect);  
+    //renderer.SetClipRect(&newClipRect);  
 
     PrimitivePoint childPosition = Position;
     if (Direction == ScrollDirection::Vertical) {
@@ -60,7 +60,7 @@ void ScrollBoxWidget::Render(RenderManager& renderer, const PrimitivePoint& Posi
 
     Children[0]->Render(renderer, childPosition);
 
-    renderer.SetClipRect(&oldClipRect);
+    //renderer.SetClipRect(&oldClipRect);
 }
 
 

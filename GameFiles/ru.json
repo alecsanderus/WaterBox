@@ -1,0 +1,8 @@
+{
+  "main:bedrock": "Кроватный камень",
+  "main:gold_ore": "ЗОЛОТАЯ руда",
+
+  "main:solids": "Твёрдости",
+  "main:water": "Вода",
+  "main:liquids": "Жидкости"
+}
