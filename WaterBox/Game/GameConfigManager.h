@@ -17,7 +17,7 @@ public:
 	const std::vector <MaterialCategory>& GetCategories();
 
 	int GetMaterialIndex(std::string Name);
-	const GameMaterial& GetMaterial(int ID);
+	inline const GameMaterial& GetMaterial(int ID) const;
 	int GetCategoryIndex(std::string Name);
 	const MaterialCategory& GetCategory(int ID);
 
@@ -42,9 +42,36 @@ private:
 	template <typename T>
 	int GetArrayIndex(const std::string& ID, std::vector <T>& elements, std::unordered_map <std::string, int>& NamesMap);
 
+	inline StateCategoryEnum ParseStateCategory(const std::string& stateStr);
+
 	const GameMaterial DefaultMaterial = { .MinColor = {0,0,0}, .MaxColor = {255,255,255}, .KeepColorProportions = false };
 	const MaterialCategory DefaultCategory = { .Name = "NO_CATEGORY", .CanBeShown = true, .Color = {255,255,0,255} };
 
 	const std::string MaterialsFileName = "Materials.json";
 
+
+
 };
+
+
+
+
+
+inline const GameMaterial& GameConfigManager::GetMaterial(int ID) const
+{
+#ifndef NDEBUG
+	if (!AreMaterialsLoaded)
+	{
+		LOG_FATAL("Materials are not loaded yet");
+
+		return DefaultMaterial;
+	}
+
+	if (ID < Materials.size())
+		return Materials[ID];
+	else
+		return DefaultMaterial;
+#else
+	return Materials[ID];
+#endif
+}

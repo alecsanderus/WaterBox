@@ -14,6 +14,11 @@
           "can_be_shown",
           "keep_color_proportions",
           "category_key",
+          "state_category",
+          "initial_temperature",
+          "density",
+          "thermal_conductivity",
+          "specific_heat_capacity",
           "color_Max_R",
           "color_Max_G",
           "color_Max_B",
@@ -34,6 +39,47 @@
           "category_key": {
             "type": "string",
             "description": "Materials category"
+          },
+          "state_category": {
+            "$ref": "#/$defs/stateCategory",
+            "description": "Aggregative state of the material"
+          },
+          "initial_temperature": {
+            "type": "number",
+            "minimum": -273.15,
+            "description": "Initial temperature in Celsius degrees"
+          },
+          "density": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Material density in kg/m3"
+          },
+          "thermal_conductivity": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Thermal conductivity in W/(m*K)"
+          },
+          "specific_heat_capacity": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Specific heat capacity in J/(kg*K)"
+          },
+          "bounciness": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Coefficient of restitution (bounciness) for vertical bounce"
+          },
+          "friction_transfer": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0,
+            "description": "Factor of vertical energy converted into horizontal velocity (scattering) upon collision"
+          },
+          "surface_friction": {
+            "type": "number",
+            "minimum": 0.0,
+            "description": "Force subtracted from horizontal velocity (VelX)"
           },
           "show_priority": {
             "type": "integer",
@@ -109,7 +155,6 @@
             "$ref": "#/$defs/colorComponent",
             "description": "Color"
           }
-
         }
       }
     }
@@ -119,6 +164,10 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 255
+    },
+    "stateCategory": {
+      "type": "string",
+      "enum": ["static", "solid", "liquid", "gas" ]
     }
   }
 }

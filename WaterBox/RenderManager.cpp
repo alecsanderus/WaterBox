@@ -165,7 +165,19 @@ bool RenderManager::ProcessEvent(const SDL_Event& EventSDL)
         }
     } 
 
+
     auto& event = EventVariant.value();
+
+    if (event.isKey())
+        if (auto& ev = std::get <in::KeyEvent>(event.data); ev.keyCode == SDL_SCANCODE_F11 && ev.action == in::InputAction::Release)
+        {
+            static bool FullScreen = false;
+            FullScreen = !FullScreen;
+            SDL_SetWindowFullscreen(window, FullScreen);
+        }
+
+
+
     if (event.isMouseMove() || event.isMouseButton() || event.isMouseScroll())
         MainWidget.ProcessEvent(event);
 

@@ -73,7 +73,7 @@ int GameMain()
             MainRenderManager.ProcessEvent(event);
         }
 
-        MainGameManager.Tick();
+        MainGameManager.Tick(SDL_GetTicks());
 
         if (!MainRenderManager.Render())
             Running = false;

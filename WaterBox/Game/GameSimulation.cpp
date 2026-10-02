@@ -7,11 +7,16 @@ void GameCell::Create(int ID)
     auto& mat = GameConfigManager::GetGameConfigManager().GetMaterial(ID);
     Color = ColorStr::GetRandomColor(mat.MinColor, mat.MaxColor, mat.KeepColorProportions);
     Active = true;
+    OriginalMaterialID = ID;
+    temp = mat.InitialTemperature;
+
+    VelX = 0;
+    VelY = 0;
 }
 
 void GameCell::Destroy()
 {
-    Color = { 0,0,0 };
+    Color = { 0,0,0,255 };
     Active = false;
 }
 
@@ -101,5 +106,98 @@ void GameSimulation::SetGameFieldSize(size_t x, size_t y)
     }
 }
 
+void GameSimulation::SimulationTick()
+{
+    TecTick++;
+
+    ProcessGravity();
+
+    ProcessDefaultPhysic();
+   
+
+}
+
+void GameSimulation::ProcessGravity()
+{
+    auto& config = GameConfigManager::GetGameConfigManager();
+
+    for (auto& i : GameField.GetVector())
+    {
+        if (i.Active && i.Updating != 1)
+        {
+            i.Updating = 1;
+
+            auto cat = config.GetMaterial(i.OriginalMaterialID).StateCategory;
+            if (cat == StateCategoryEnum::liquid || cat == StateCategoryEnum::gas || cat == StateCategoryEnum::solid)
+                i.VelY += (i.VelY < 0.05f) ? 0.4f : 0.1f;
+        }
+    }    
+}
+
+void GameSimulation::ProcessDefaultPhysic()
+{
+    auto& config = GameConfigManager::GetGameConfigManager();
+
+    for (int y = GameSizeY -1; y >= 0 ; y--)
+    {
+        for (int x = 0; x < GameSizeX; x++)
+        {
+            auto& tec = GameField(x, y);
+            if (!tec.Active || tec.Updating == 2) continue;
+
+            tec.Updating = 2;
+
+            auto& mat = config.GetMaterial(tec.OriginalMaterialID);
+
+            switch (mat.StateCategory)
+            {
+            case StateCategoryEnum::solid:
+            {               
+                float vx = tec.VelX, vy = tec.VelY;
+                int tecX = x, tecY = y;
+                while (true)
+                {
+                    if (vy <= 0) break;
+                    if (vy < 1) vy = vy > RandomFloat(x, y, TecTick);
+                    if (vy <= 0) break;
+
+                    if (tecY < GameSizeY - 1 && !GameField(tecX, tecY + 1).Active)
+                    {
+                       
+
+                    }
+                    else
+                        break;
+                    vy--;
+                    tecY++;
+                }
+                std::swap(GameField(x, y), GameField(tecX, tecY));
+                break;
+            }
+            default:
+                break;
+            }
+
+        }
+    }
+}
 
 
+
+inline uint32_t GameSimulation::Deterministic_hash(uint32_t x, uint32_t y, uint32_t tick) {
+   
+    uint32_t state = x * 73856093U ^ y * 19349663U ^ tick * 83492791U;
+
+    state ^= state >> 16;
+    state *= 0x85ebca6b;
+    state ^= state >> 13;
+    state *= 0xc2b2ae35;
+    state ^= state >> 16;
+
+    return state;
+}
+
+inline float GameSimulation::RandomFloat(uint32_t x, uint32_t y, uint32_t tick)
+{
+    return (float)Deterministic_hash(x, y, tick) / (float)UINT32_MAX;
+}

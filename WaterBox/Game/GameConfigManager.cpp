@@ -28,23 +28,6 @@ int GameConfigManager::GetMaterialIndex(std::string Name)
         return 0;
 }
 
-const GameMaterial& GameConfigManager::GetMaterial(int ID)
-{
-    if (!AreMaterialsLoaded)
-        LoadConfig();
-
-    if (!AreMaterialsLoaded)
-    {
-        LOG_FATAL("Materials are not loaded yet");
-       
-        return DefaultMaterial;
-    }
-
-    if (ID < Materials.size())
-        return Materials[ID];
-    else
-        return DefaultMaterial;
-}
 
 int GameConfigManager::GetCategoryIndex(std::string Name)
 {
@@ -115,15 +98,26 @@ bool GameConfigManager::LoadMaterials(std::string FileName)
 
                 TecMat.ShowPriority = item.value <int>("show_priority", 0);
                 TecMat.CanBeShown = item.value <bool>("can_be_shown", true);
-                TecMat.KeepColorProportions = item.value <bool>("keep_color_proportions", true);
 
+
+                TecMat.KeepColorProportions = item.value <bool>("keep_color_proportions", true);
                 TecMat.MaxColor.r = item.value <int>("color_Max_R", 0);
                 TecMat.MaxColor.g = item.value <int>("color_Max_G", 0);
                 TecMat.MaxColor.b = item.value <int>("color_Max_B", 0);
-
                 TecMat.MinColor.r = item.value <int>("color_Min_R", 0);
                 TecMat.MinColor.g = item.value <int>("color_Min_G", 0);
                 TecMat.MinColor.b = item.value <int>("color_Min_B", 0);
+
+
+                std::string StateStr = item.value <std::string> ("state_category", std::string ("NO_CATEGORY_IN_FILE"));
+                TecMat.StateCategory = ParseStateCategory(StateStr);
+
+                TecMat.InitialTemperature = item.value<float>("initial_temperature", 20.0f);
+                TecMat.Density = item.value<float>("density", 1000.0f);
+                TecMat.ThermalConductivity = item.value<float>("thermal_conductivity", 1.0f);
+                TecMat.SpecificHeatCapacity = item.value<float>("specific_heat_capacity", 1000.0f);
+
+                TecMat.IsLoaded = true;
             }
         }
         if (json.contains("Categories") && json["Categories"].is_array()) {
@@ -148,7 +142,7 @@ bool GameConfigManager::LoadMaterials(std::string FileName)
             }
         }
 
-        LOG_INFO("Materials loaded from" + FileName);
+        LOG_INFO("Materials loaded from " + FileName);
     }
     catch (const nlohmann::json::parse_error& e) {
         std::string err = "Cant parse  " + FileName + "  JSON: " + std::string(e.what());
@@ -202,7 +196,7 @@ void GameConfigManager::LoadLocalization(std::string FileName)
             }
         }
       
-        LOG_INFO("Localization loaded from" + FullFileName);
+        LOG_INFO("Localization loaded from " + FullFileName);
     }
     catch (const nlohmann::json::parse_error& e) {
         std::string err = "Cant parse  " + FullFileName + "  JSON: " + std::string(e.what());
@@ -232,3 +226,17 @@ int GameConfigManager::GetArrayIndex(const std::string& ID, std::vector <T>& ele
 
     return newIndex;
 }
+
+StateCategoryEnum GameConfigManager::ParseStateCategory(const std::string& stateStr)
+{
+    if (stateStr == "static")   return StateCategoryEnum::unmovable;
+    if (stateStr == "solid")    return StateCategoryEnum::solid; 
+    if (stateStr == "liquid")   return StateCategoryEnum::liquid;
+    if (stateStr == "gas")      return StateCategoryEnum::gas;
+
+    LOG_ERROR("Incorrect StateCategory  " + stateStr);
+
+    return StateCategoryEnum::unmovable; 
+};
+
+

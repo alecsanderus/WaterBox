@@ -7,11 +7,13 @@ class GameManager
 {
 public:
 	void Init();
-	void Tick();
+	void Tick(uint64_t time);
 
 	static GameManager& GetGameManager();
 	const GameSimulation& GetSimulation();
 	class SimulationTool& GetSimulationTool();
+
+	uint64_t SPT = 1000 / 60;
 
 private:
 

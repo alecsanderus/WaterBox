@@ -32,7 +32,10 @@ public:
 		Field.resize (sizX * sizY);
 	}
 
-	const std::vector <T> GetVector()	const{
+	const std::vector <T>& GetVector()	const{
+		return Field;
+	}
+	std::vector <T>& GetVector()	{
 		return Field;
 	}
 private:
@@ -42,14 +45,18 @@ private:
 
 
 struct GameCell
-{	
+{
 	void Create(int ID);
 	void Destroy();
 
 	ColorStr Color;
 	uint16_t OriginalMaterialID = 0;
-	int16_t temp = 20;
 	bool Active = 0;
+	uint8_t Updating = 0;
+
+	int temp = 20;
+
+	float VelX = 0, VelY = 0;
 };
 
 
@@ -62,8 +69,22 @@ public:
 	std::pair <size_t, size_t> GetGameFieldSize() const;
 	void SetGameFieldSize(size_t x, size_t y);
 
+	void SimulationTick();
+
+
+
+	void ProcessGravity();
+	void ProcessDefaultPhysic();
+
+
 private:	
+
+	inline uint32_t Deterministic_hash(uint32_t x, uint32_t y, uint32_t tick);
+	inline float RandomFloat(uint32_t x, uint32_t y, uint32_t tick);
+
 	friend class SimulationTool;
 	size_t GameSizeX = 100, GameSizeY = 100;
 	Vector2D <GameCell> GameField;
+
+	uint32_t TecTick = 0;
 };

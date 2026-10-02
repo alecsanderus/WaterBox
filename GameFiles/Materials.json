@@ -6,6 +6,11 @@
       "name": "main:bedrock",
       "can_be_shown": true,
       "category_key": "main:solids",
+      "state_category": "static",
+      "initial_temperature": 20.0,
+      "density": 999999.0,
+      "thermal_conductivity": 0.0,
+      "specific_heat_capacity": 999999999.0,
       "show_priority": 999,
       "keep_color_proportions": true,
       "color_Max_R": 113,
@@ -16,22 +21,32 @@
       "color_Min_B": 17
     },
     {
-      "name": "main:gold_ore",
+      "name": "main:stone",
       "can_be_shown": true,
       "category_key": "main:solids",
+      "state_category": "solid",
+      "initial_temperature": 20.0,
+      "density": 2700.0,
+      "thermal_conductivity": 2.8,
+      "specific_heat_capacity": 790.0,
       "show_priority": 10,
-      "keep_color_proportions": false,
-      "color_Max_R": 255,
-      "color_Max_G": 215,
-      "color_Max_B": 0,
-      "color_Min_R": 140,
-      "color_Min_G": 105,
-      "color_Min_B": 10
+      "keep_color_proportions": true,
+      "color_Max_R": 140,
+      "color_Max_G": 140,
+      "color_Max_B": 140,
+      "color_Min_R": 90,
+      "color_Min_G": 90,
+      "color_Min_B": 90
     },
     {
       "name": "main:water",
       "can_be_shown": true,
       "category_key": "main:liquids",
+      "state_category": "liquid",
+      "initial_temperature": 20.0,
+      "density": 1000.0,
+      "thermal_conductivity": 0.6,
+      "specific_heat_capacity": 4184.0,
       "show_priority": 999,
       "keep_color_proportions": true,
       "color_Max_R": 65,
@@ -40,6 +55,42 @@
       "color_Min_R": 28,
       "color_Min_G": 107,
       "color_Min_B": 160
+    },
+    {
+      "name": "main:lava",
+      "can_be_shown": true,
+      "category_key": "main:liquids",
+      "state_category": "liquid",
+      "initial_temperature": 1200.0,
+      "density": 2600.0,
+      "thermal_conductivity": 0.6,
+      "specific_heat_capacity": 1450.0,
+      "show_priority": 50,
+      "keep_color_proportions": false,
+      "color_Max_R": 255,
+      "color_Max_G": 90,
+      "color_Max_B": 0,
+      "color_Min_R": 180,
+      "color_Min_G": 30,
+      "color_Min_B": 0
+    },
+    {
+      "name": "main:air",
+      "can_be_shown": true,
+      "category_key": "main:gases",
+      "state_category": "gas",
+      "initial_temperature": 20.0,
+      "density": 1.225,
+      "thermal_conductivity": 0.026,
+      "specific_heat_capacity": 1005.0,
+      "show_priority": 1,
+      "keep_color_proportions": true,
+      "color_Max_R": 230,
+      "color_Max_G": 240,
+      "color_Max_B": 255,
+      "color_Min_R": 200,
+      "color_Min_G": 210,
+      "color_Min_B": 230
     }
   ],
 
@@ -59,7 +110,14 @@
       "color_R": 41,
       "color_G": 128,
       "color_B": 185
+    },
+    {
+      "name": "main:gases",
+      "can_be_shown": false,
+      "show_priority": 997,
+      "color_R": 180,
+      "color_G": 210,
+      "color_B": 230
     }
   ]
-
 }
