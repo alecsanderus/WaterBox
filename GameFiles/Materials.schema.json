@@ -70,7 +70,7 @@
             "maximum": 1.0,
             "description": "Coefficient of restitution (bounciness) for vertical bounce"
           },
-          "friction_transfer": {
+          "catter_factor": {
             "type": "number",
             "minimum": 0.0,
             "maximum": 1.0,
@@ -80,6 +80,10 @@
             "type": "number",
             "minimum": 0.0,
             "description": "Force subtracted from horizontal velocity (VelX)"
+          },
+          "can_slide": {
+            "type": "boolean",
+            "description": "Must the material slide like a sand, only for solids"
           },
           "show_priority": {
             "type": "integer",

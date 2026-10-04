@@ -54,6 +54,12 @@ void GameViewWidget::UpdateTexture()
             (static_cast<uint32_t>(color.g) << 16) |
             (static_cast<uint32_t>(color.b) << 8) |
             static_cast<uint32_t>(255);
+        /*const auto& gg = Grid[tec];
+        Pixels[tec] =
+            (static_cast<uint32_t>(gg.VelX * 5 + 120) << 24) |
+            (static_cast<uint32_t>(gg.OriginalMaterialID * 50) << 16) |
+            (static_cast<uint32_t>(gg.VelY * 5 + 120) << 8) |
+            static_cast<uint32_t>(255);*/
     }
 
 

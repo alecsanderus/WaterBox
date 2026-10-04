@@ -114,7 +114,7 @@ void GameSimulation::SimulationTick()
 
     ProcessDefaultPhysic();
    
-
+   // NormalizeVelosity();
 }
 
 void GameSimulation::ProcessGravity()
@@ -129,7 +129,7 @@ void GameSimulation::ProcessGravity()
 
             auto cat = config.GetMaterial(i.OriginalMaterialID).StateCategory;
             if (cat == StateCategoryEnum::liquid || cat == StateCategoryEnum::gas || cat == StateCategoryEnum::solid)
-                i.VelY += (i.VelY < 0.05f) ? 0.4f : 0.1f;
+                i.VelY += (i.VelY == 0) ? 0.1f : 0.1f;
         }
     }    
 }
@@ -140,7 +140,7 @@ void GameSimulation::ProcessDefaultPhysic()
 
     for (int y = GameSizeY -1; y >= 0 ; y--)
     {
-        for (int x = 0; x < GameSizeX; x++)
+        for (int x = GameSizeX - 1; x >= 0; x--)
         {
             auto& tec = GameField(x, y);
             if (!tec.Active || tec.Updating == 2) continue;
@@ -149,35 +149,202 @@ void GameSimulation::ProcessDefaultPhysic()
 
             auto& mat = config.GetMaterial(tec.OriginalMaterialID);
 
-            switch (mat.StateCategory)
+            if (mat.StateCategory == StateCategoryEnum::unmovable) continue;
+
+            int StepsX = static_cast<int>(tec.VelX);
+            int StepsY = static_cast<int>(tec.VelY);
+
+            StepsX += (RandomFloat(x, y, TecTick) < abs(tec.VelX - StepsX)) * ((tec.VelX > 0) ? 1 : -1);
+            StepsY += (RandomFloat(x, y, TecTick) < abs(tec.VelY - StepsY)) * ((tec.VelY > 0) ? 1 : -1);
+
+            if (StepsX == 0 && StepsY == 0) continue;
+
+            int tecX = x, tecY = y;
+
+            int AbsStepsX = std::abs(StepsX);
+            int AbsStepsY = std::abs(StepsY);
+            int SignX = (StepsX > 0) ? 1 : -1;
+            int SignY = (StepsY > 0) ? 1 : -1;
+
+
+            int MaxSteps = std::max(AbsStepsX, AbsStepsY);
+            float AccumX = 0.0f;
+            float AccumY = 0.0f;
+            float RatioX = (MaxSteps > 0) ? static_cast<float>(AbsStepsX) / MaxSteps : 0.0f;
+            float RatioY = (MaxSteps > 0) ? static_cast<float>(AbsStepsY) / MaxSteps : 0.0f;
+
+            bool hit_something = false;
+
+
+            for (int step = 0; step < MaxSteps; step++)
             {
-            case StateCategoryEnum::solid:
-            {               
-                float vx = tec.VelX, vy = tec.VelY;
-                int tecX = x, tecY = y;
-                while (true)
-                {
-                    if (vy <= 0) break;
-                    if (vy < 1) vy = vy > RandomFloat(x, y, TecTick);
-                    if (vy <= 0) break;
+                int NextX = tecX;
+                int NextY = tecY;
 
-                    if (tecY < GameSizeY - 1 && !GameField(tecX, tecY + 1).Active)
-                    {
-                       
+                AccumX += RatioX;
+                AccumY += RatioY;
 
-                    }
-                    else
-                        break;
-                    vy--;
-                    tecY++;
+                if (AccumX >= 1.0f) {
+                    NextX += SignX;
+                    AccumX -= 1.0f;
                 }
-                std::swap(GameField(x, y), GameField(tecX, tecY));
-                break;
-            }
-            default:
-                break;
+                if (AccumY >= 1.0f) {
+                    NextY += SignY;
+                    AccumY -= 1.0f;
+                }
+
+
+                if (NextX < 0 || NextX >= GameSizeX || NextY < 0 || NextY >= GameSizeY)
+                {
+                    auto& NewTec = GameField(tecX, tecY);
+                    if (NextX < 0 || NextX >= GameSizeX) NewTec.VelX = 0.0f;
+                    if (NextY < 0 || NextY >= GameSizeY) NewTec.VelY = 0.0f;
+                    hit_something = true;
+                    break;
+                }
+
+
+                auto& target = GameField(NextX, NextY);
+                if (!target.Active)
+                {
+                    std::swap(GameField(tecX, tecY), target);
+                    tecX = NextX;
+                    tecY = NextY;
+                    continue;
+                }
+
+                uint8_t Direction = 0;
+                if (NextX != tecX && NextY == tecY) {
+                    Direction = (SignX > 0) ? 1 : 3;
+                }
+                else if (NextY != tecY && NextX == tecX) {
+                    Direction = (SignY > 0) ? 0 : 2;
+                }
+                else {
+                    Direction = (AbsStepsY > AbsStepsX) ? ((SignY > 0) ? 0 : 2) : ((SignX > 0) ? 1 : 3);
+                }
+
+                auto& target_mat = config.GetMaterial(target.OriginalMaterialID);
+
+
+                if ((target_mat.StateCategory == StateCategoryEnum::liquid || target_mat.StateCategory == StateCategoryEnum::gas)
+                    && mat.Density > target_mat.Density)
+                {
+                    std::swap(GameField(tecX, tecY), target);
+                    tecX = NextX;
+                    tecY = NextY;
+                    continue;
+                }
+
+                DoCollision(GameField(tecX, tecY), target, Direction, tecX, tecY);
+                                            
+
+                hit_something = true;
+                break; 
             }
 
+
+        }
+    }
+}
+
+void GameSimulation::DoCollision(GameCell& a, GameCell& b, uint8_t direction, int x, int y)
+{
+
+    auto& config = GameConfigManager::GetGameConfigManager();
+    auto& AMat = config.GetMaterial(a.OriginalMaterialID);
+    auto& BMat = config.GetMaterial(b.OriginalMaterialID);
+
+    float DensSumm = AMat.Density + BMat.Density;
+    if (AMat.Density <= 0.f || BMat.Density <= 0.f) return;
+
+    float nx = 0.f, ny = 0.f;
+    switch (direction) {
+    case 0: ny = 1.f; break; // a сверху, давит вниз
+    case 1: nx = 1.f; break; // a слева, давит вправо
+    case 2: ny = -1.f; break; // a снизу, давит вверх
+    case 3: nx = -1.f; break; // a справа, давит влево
+    default: return;
+    }
+
+    float vRelX = a.VelX - b.VelX;
+    float vRelY = a.VelY - b.VelY;
+
+    if (vRelX * nx <= 0 && vRelY * ny <= 0) return;
+
+    float Bon = (AMat.Bounciness);
+    float Sc = (AMat.ScatterFactor + BMat.ScatterFactor) * 0.5f;
+    float Fr = (AMat.SurfaceFriction + BMat.SurfaceFriction) * 0.5f;
+
+
+
+
+    if (nx != 0)
+    {
+        float FrictionY = Fr * vRelX;
+        bool vyN = a.VelY >= 0;
+        a.VelY = std::max(abs(a.VelY) - abs(FrictionY), 0.f) * ((vyN) ? 1 : -1);
+    }
+    else
+    {
+        float FrictionX = Fr * vRelY;
+        bool vxN = a.VelX >= 0;
+        a.VelX = std::max(abs(a.VelX) - abs(FrictionX), 0.f) * ((vxN) ? 1 : -1);
+    }
+
+
+
+
+
+    if (AMat.Density != BMat.Density)
+    {
+        if (nx != 0)
+        {
+            a.VelX = b.VelX;
+            b.VelX += vRelX * AMat.Density / BMat.Density;
+        }
+        else
+        {
+            a.VelY = b.VelY;
+            b.VelY += vRelY * AMat.Density / BMat.Density;
+        }
+    }
+    else
+    {
+        if (nx != 0)
+            std::swap(a.VelX, b.VelX);
+        else
+            std::swap(a.VelY, b.VelY);
+    }
+
+  
+}
+
+void GameSimulation::NormalizeVelosity()
+{
+    auto& config = GameConfigManager::GetGameConfigManager();
+
+    for (auto& i : GameField.GetVector())
+    {
+        if (i.Active && i.Updating != 1)
+        {
+            i.Updating = 3;
+
+            auto cat = config.GetMaterial(i.OriginalMaterialID).StateCategory;
+            if (cat == StateCategoryEnum::unmovable)
+            {
+                i.VelX = 0;
+                i.VelY = 0;
+            }
+            else
+            {
+                i.VelX *= 0.99;
+                i.VelY *= 0.99;
+                if (abs(i.VelX) < 0.01f) i.VelX = 0.f;
+                if (abs(i.VelY) < 0.01f) i.VelY = 0.f;
+
+
+            }
         }
     }
 }

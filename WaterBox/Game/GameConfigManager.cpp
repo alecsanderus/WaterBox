@@ -117,6 +117,13 @@ bool GameConfigManager::LoadMaterials(std::string FileName)
                 TecMat.ThermalConductivity = item.value<float>("thermal_conductivity", 1.0f);
                 TecMat.SpecificHeatCapacity = item.value<float>("specific_heat_capacity", 1000.0f);
 
+                TecMat.Bounciness = item.value<float>("bounciness", 0.1f);
+                TecMat.ScatterFactor = item.value<float>("catter_factor", 0.05f);
+                TecMat.SurfaceFriction = item.value<float>("surface_friction", 2.0f);
+                TecMat.CanSlide = item.value <bool>("can_slide", false);
+
+
+
                 TecMat.IsLoaded = true;
             }
         }

@@ -28,6 +28,12 @@ struct GameMaterial
 	float Density = 1000;
 	float ThermalConductivity = 1;
 	float SpecificHeatCapacity = 1000;
+
+	float Bounciness = 0.1;
+	float ScatterFactor = 0.05;
+	float SurfaceFriction = 2;
+
+	bool CanSlide = false;
 };
 
 struct MaterialCategory
