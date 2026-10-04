@@ -114,7 +114,7 @@ void GameSimulation::SimulationTick()
 
     ProcessDefaultPhysic();
    
-   // NormalizeVelosity();
+    NormalizeVelocity();
 }
 
 void GameSimulation::ProcessGravity()
@@ -140,7 +140,7 @@ void GameSimulation::ProcessDefaultPhysic()
 
     for (int y = GameSizeY -1; y >= 0 ; y--)
     {
-        for (int x = GameSizeX - 1; x >= 0; x--)
+        for (int x = 0; x < GameSizeX; x++)
         {
             auto& tec = GameField(x, y);
             if (!tec.Active || tec.Updating == 2) continue;
@@ -224,20 +224,16 @@ void GameSimulation::ProcessDefaultPhysic()
                     Direction = (AbsStepsY > AbsStepsX) ? ((SignY > 0) ? 0 : 2) : ((SignX > 0) ? 1 : 3);
                 }
 
-                auto& target_mat = config.GetMaterial(target.OriginalMaterialID);
-
-
-                if ((target_mat.StateCategory == StateCategoryEnum::liquid || target_mat.StateCategory == StateCategoryEnum::gas)
-                    && mat.Density > target_mat.Density)
+                float stopping = DoLiteCollision(GameField(tecX, tecY), target, Direction, tecX, tecY, NextX, NextY);
+                MaxSteps *= stopping;
+                                            
+                if (stopping > 0)
                 {
-                    std::swap(GameField(tecX, tecY), target);
+                    std::swap(GameField(tecX, tecY), GameField(NextX, NextY));
                     tecX = NextX;
                     tecY = NextY;
                     continue;
                 }
-
-                DoCollision(GameField(tecX, tecY), target, Direction, tecX, tecY);
-                                            
 
                 hit_something = true;
                 break; 
@@ -248,7 +244,7 @@ void GameSimulation::ProcessDefaultPhysic()
     }
 }
 
-void GameSimulation::DoCollision(GameCell& a, GameCell& b, uint8_t direction, int x, int y)
+void GameSimulation::DoCollision(GameCell& a, GameCell& b, uint8_t direction, int x, int y, float size)
 {
 
     auto& config = GameConfigManager::GetGameConfigManager();
@@ -270,6 +266,9 @@ void GameSimulation::DoCollision(GameCell& a, GameCell& b, uint8_t direction, in
     float vRelX = a.VelX - b.VelX;
     float vRelY = a.VelY - b.VelY;
 
+    vRelX *= size;
+    vRelY *= size;
+
     if (vRelX * nx <= 0 && vRelY * ny <= 0) return;
 
     float Bon = (AMat.Bounciness);
@@ -279,7 +278,36 @@ void GameSimulation::DoCollision(GameCell& a, GameCell& b, uint8_t direction, in
 
 
 
-    if (nx != 0)
+    if (AMat.Density != BMat.Density)
+    {
+        if (nx != 0)
+        {
+            a.VelX -= vRelX;
+            b.VelX += vRelX * AMat.Density / BMat.Density;
+        }
+        else
+        {
+            a.VelY -= vRelY;
+            b.VelY += vRelY * AMat.Density / BMat.Density;
+        }
+    }
+    else
+    {
+        if (nx != 0)
+        {
+            a.VelX -= vRelX;
+            b.VelX += vRelX;
+        }           
+        else
+        {
+            a.VelY -= vRelY;
+            b.VelY += vRelY;
+        }
+           
+    }
+
+
+  /*  if (nx != 0)
     {
         float FrictionY = Fr * vRelX;
         bool vyN = a.VelY >= 0;
@@ -290,37 +318,142 @@ void GameSimulation::DoCollision(GameCell& a, GameCell& b, uint8_t direction, in
         float FrictionX = Fr * vRelY;
         bool vxN = a.VelX >= 0;
         a.VelX = std::max(abs(a.VelX) - abs(FrictionX), 0.f) * ((vxN) ? 1 : -1);
-    }
-
-
-
-
-
-    if (AMat.Density != BMat.Density)
-    {
-        if (nx != 0)
-        {
-            a.VelX = b.VelX;
-            b.VelX += vRelX * AMat.Density / BMat.Density;
-        }
-        else
-        {
-            a.VelY = b.VelY;
-            b.VelY += vRelY * AMat.Density / BMat.Density;
-        }
-    }
-    else
-    {
-        if (nx != 0)
-            std::swap(a.VelX, b.VelX);
-        else
-            std::swap(a.VelY, b.VelY);
-    }
+    }*/
 
   
 }
 
-void GameSimulation::NormalizeVelosity()
+float GameSimulation::DoLiteCollision(GameCell& a, GameCell& b, uint8_t direction, int& xA, int& yA, int& xB, int& yB)
+{
+    /*  switch (direction) {
+    case 0: ny = 1.f; break; // a сверху, давит вниз
+    case 1: nx = 1.f; break; // a слева, давит вправо
+    case 2: ny = -1.f; break; // a снизу, давит вверх
+    case 3: nx = -1.f; break; // a справа, давит влево
+    default: return;
+    }
+*/
+
+    auto& config = GameConfigManager::GetGameConfigManager();
+
+    auto& mat = config.GetMaterial(a.OriginalMaterialID);
+    auto& target_mat = config.GetMaterial(b.OriginalMaterialID);
+
+
+    if ((target_mat.StateCategory == StateCategoryEnum::liquid || target_mat.StateCategory == StateCategoryEnum::gas)
+        && mat.Density > target_mat.Density)
+    {
+        return 1.f;
+    }
+
+    if (target_mat.StateCategory != StateCategoryEnum::solid || !target_mat.CanSlide)
+    {
+        DoCollision(a, GameField(xB, yB), direction, xA, yA);
+        return 0.f;
+    }
+
+       /* if (!direction && yA == yB-1 && xA == xB)
+        {
+            bool tried = 1;
+            if (RandomFloat(xA, yB, TecTick) > 0.5f)
+            {
+                Ch1:
+                if (xA > 0 && !GameField(xA - 1, yA).Active && !GameField(xA - 1, yA + 1).Active)
+                {
+                    DoCollision(a, b, direction, xA, yA, 0.3f);
+                    xB--;
+                    xA--;
+                    auto& NewB = GameField(xB, yA);
+                    std::swap(a, NewB);
+                    DoCollision(a, NewB, direction, xA, yA);
+                    return 0.7f;
+                }
+                else if (tried)
+                {
+                    tried = 0;
+                    goto Ch2;
+                }
+            }
+            else
+            {
+                Ch2:
+                if (xA < GameSizeX-1 && !GameField(xA + 1, yA).Active && !GameField(xA + 1, yA + 1).Active)
+                {
+                    DoCollision(a, b, direction, xA, yA, 0.3f);
+                    xB++;
+                    xA++;
+                    auto& NewB = GameField(xB, yA);
+                    std::swap(a, NewB);
+                    DoCollision(a, NewB, direction, xA, yA);
+                    return 0.7f;
+                }
+                else if (tried)
+                {
+                    tried = 0;
+                    goto Ch1;
+                }
+            }
+        }*/
+
+
+
+    int normalX = 0, normalY = 0;
+    int tangentX = 0, tangentY = 0;
+
+    switch (direction)
+    {
+    case 0: normalY = 1; tangentX = 1; break; // A сверху, B снизу
+    case 1: normalX = 1; tangentY = 1; break; // A слева, B справа
+    case 2: normalY = -1; tangentX = 1; break; // A снизу, B сверху
+    case 3: normalX = -1; tangentY = 1; break; // A справа, B слева
+    default: return 0.0f;
+    }
+
+    if (xB != xA + normalX || yB != yA + normalY)
+    {
+        DoCollision(a, GameField(xB, yB), direction, xA, yA);
+        return 0.0f;
+    }
+
+    auto IsOutOfBounds = [&](int x, int y) {
+        return x < 0 || x >= GameSizeX || y < 0 || y >= GameSizeY;
+        };
+
+
+    auto TrySlide = [&](int sign) -> bool
+        {
+            const int slideX = xA + tangentX * sign;
+            const int slideY = yA + tangentY * sign;
+            const int cornerX = slideX + normalX; 
+            const int cornerY = slideY + normalY;
+
+            if (IsOutOfBounds(slideX, slideY) || GameField(slideX, slideY).Active) return false;
+            if (IsOutOfBounds(cornerX, cornerY) || GameField(cornerX, cornerY).Active) return false;
+     
+            xB = slideX;
+            yB = slideY;
+
+            return true;
+        };
+
+    bool firstPositive = RandomFloat(xA, yA + xB + yB, TecTick) > 0.5f;
+    int firstSign = firstPositive ? 1 : -1;
+
+    if (TrySlide(firstSign) || TrySlide(-firstSign))
+    {
+        DoCollision(a, b, direction, xA, yA, 0.3f);
+        return 0.7f;
+
+    }
+
+    DoCollision(a, GameField(xB, yB), direction, xA, yA);
+    return 0.0f;
+}
+
+   
+
+
+void GameSimulation::NormalizeVelocity()
 {
     auto& config = GameConfigManager::GetGameConfigManager();
 

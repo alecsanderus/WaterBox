@@ -11,8 +11,8 @@ android {
         applicationId = "org.GigaGames.WaterBox"
         minSdkVersion 21
         targetSdkVersion 37
-        versionCode 3
-        versionName "0.1"
+        versionCode 4
+        versionName "0.2"
         externalNativeBuild {
             cmake {
                 arguments "-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON",

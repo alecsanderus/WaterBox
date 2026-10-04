@@ -75,8 +75,9 @@ public:
 
 	void ProcessGravity();
 	void ProcessDefaultPhysic();
-	void DoCollision(GameCell& a, GameCell&b, uint8_t direction, int x, int y);
-	void NormalizeVelosity();
+	void DoCollision (GameCell& a, GameCell&b, uint8_t direction, int x, int y, float size = 1);
+	float DoLiteCollision (GameCell& a, GameCell& b, uint8_t direction, int& xA, int& yA, int& xB, int& yB);
+	void NormalizeVelocity();
 
 
 private:	
