@@ -112,69 +112,17 @@ bool GameViewWidget::ProcessEvent(const in::InputEvent& event)
 
     in::InputEvent NewEvent = event;
 
-    int PosX = NewEvent.x = event.x * GameSize.first / MySize.x;
-    int PosY = NewEvent.y = event.y * GameSize.second / MySize.y;   
+    NewEvent.x = std::clamp(event.x * (int)GameSize.first / (int)MySize.x, 0, (int)GameSize.first-1);
+    NewEvent.y = std::clamp(event.y * (int)GameSize.second / (int)MySize.y, 0, (int)GameSize.second-1);
 
 
-    if (event.isMouseScroll())
-    {
-        SimTool.ProcessEvent(event);
-        return true;
-    }
+    if (!event.isMouseScroll())    
+        lock = { this, EventFocusType::Lock_AutoUnlock };     
+    
 
 
-
-    PosX = std::max(PosX, 0);
-    PosY = std::max(PosY, 0);
-    PosX = std::min(PosX, (int)GameSize.first -1);
-    PosY = std::min(PosY, (int)GameSize.second -1);
-  
-    lock  = { this, EventFocusType::Lock_AutoUnlock };
-
-    if (OldX != -1 && OldY != -1)
-    {
-        int dx = std::abs(PosX - OldX);
-        int dy = std::abs(PosY - OldY);
-
-        int sx = (OldX < PosX) ? 1 : -1;
-        int sy = (OldY < PosY) ? 1 : -1;
-
-        int err = dx - dy;
-
-        while (true) {
-            NewEvent.x = OldX;
-            NewEvent.y = OldY;
-            SimTool.ProcessEvent(NewEvent);
-
-            if (OldX == PosX && OldY == PosY) {
-                break;
-            }
-
-            int e2 = 2 * err;
-
-            if (e2 > -dy) {
-                err -= dy;
-                OldX += sx;
-            }
-
-            if (e2 < dx) {
-                err += dx;
-                OldY += sy;
-            }
-        }
-    }
-    else
-    {
-        SimTool.ProcessEvent(NewEvent);
-    }
-
-
-   
-
-
-    if (event.isMouseButton() && std::get <in::MouseButtonEvent> (event.data).action == in::InputAction::Release) { OldX = -1; OldY = -1; }
-    else {OldX = PosX; OldY = PosY;}
-
+    SimTool.ProcessEvent(NewEvent);
+    
     return true;
 }
 

@@ -6,7 +6,7 @@
 void GameManager::Init()
 {
 	Simulation = std::make_unique <GameSimulation> ();
-	Simulation->SetGameFieldSize(1000, 1000);
+	Simulation->SetGameFieldSize(500, 500);
 
 	SimTool = std::make_unique <SimulationTool>();
 	SimTool->SetSimulation(Simulation.get());
@@ -14,6 +14,8 @@ void GameManager::Init()
 
 void GameManager::Tick(uint64_t time)
 {
+	SimTool->Tick();
+
 	static uint64_t LastTime = 0;
 	if (time >= LastTime + SPT)
 	{

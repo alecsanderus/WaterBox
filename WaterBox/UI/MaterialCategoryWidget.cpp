@@ -12,6 +12,7 @@
 void MaterialCategoryWidget::Init(RenderManager* manager, int ID, TabsBoxWidget* tabs, int TabsID)
 {
 	auto& cat = GameConfigManager::GetGameConfigManager().GetCategory(ID);
+	cat.ThisMaterialCategoryWidget = this;
 
 	Children.clear();
 

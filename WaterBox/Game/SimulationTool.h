@@ -23,7 +23,7 @@ public:
 
 	void SetMaterial(int ID);
 	void SetTool(ToolType Type);
-
+	void Tick();
 	
 
 private:
@@ -41,10 +41,12 @@ private:
 
 
 	template <typename Func>
-	void UseSquareTool(int centerX, int centerY, Func Tool);
+	void UseLineSquareTool(int xA, int yA, int xB, int yB, Func Tool);
 
 
 	bool LMB_State = false;
 	bool RMB_State = false;
 	bool MMB_State = false;
+	int MPosX = -1, MPosY = -1;
+	int LastMPosX = -1, LastMPosY = -1;
 };

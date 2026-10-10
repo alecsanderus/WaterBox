@@ -34,6 +34,9 @@ struct GameMaterial
 	float SurfaceFriction = 2;
 
 	bool CanSlide = false;
+
+
+	class MaterialCardWidget* ThisMaterialCardWidget;
 };
 
 struct MaterialCategory
@@ -44,4 +47,8 @@ struct MaterialCategory
 
 	bool CanBeShown = true;
 	ColorStr Color;
+
+
+	class MaterialCategoryWidget* ThisMaterialCategoryWidget;
+
 };

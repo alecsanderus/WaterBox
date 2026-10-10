@@ -5,14 +5,14 @@
 
 
 
-const std::vector<GameMaterial>& GameConfigManager::GetMaterials()
+std::vector<GameMaterial>& GameConfigManager::GetMaterials()
 {
     if (!AreMaterialsLoaded)
         LoadConfig();
 	return Materials;
 }
 
-const std::vector<MaterialCategory>& GameConfigManager::GetCategories()
+std::vector<MaterialCategory>& GameConfigManager::GetCategories()
 {
     if (!AreMaterialsLoaded)
         LoadConfig();
@@ -38,7 +38,7 @@ int GameConfigManager::GetCategoryIndex(std::string Name)
         return 0;
 }
 
-const MaterialCategory& GameConfigManager::GetCategory(int ID)
+MaterialCategory& GameConfigManager::GetCategory(int ID)
 {
     if (!AreMaterialsLoaded)
         LoadConfig();

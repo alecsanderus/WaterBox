@@ -10,8 +10,9 @@ void GameCell::Create(int ID)
     OriginalMaterialID = ID;
     temp = mat.InitialTemperature;
 
-    VelX = 0;
-    VelY = 0;
+    VelX = 0.f;
+    VelY = 0.f;
+    Pressure = 0.f;
 }
 
 void GameCell::Destroy()
@@ -307,7 +308,7 @@ void GameSimulation::DoCollision(GameCell& a, GameCell& b, uint8_t direction, in
     }
 
 
-  /*  if (nx != 0)
+    if (nx != 0)
     {
         float FrictionY = Fr * vRelX;
         bool vyN = a.VelY >= 0;
@@ -318,7 +319,7 @@ void GameSimulation::DoCollision(GameCell& a, GameCell& b, uint8_t direction, in
         float FrictionX = Fr * vRelY;
         bool vxN = a.VelX >= 0;
         a.VelX = std::max(abs(a.VelX) - abs(FrictionX), 0.f) * ((vxN) ? 1 : -1);
-    }*/
+    }
 
   
 }

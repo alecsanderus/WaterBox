@@ -56,7 +56,8 @@ struct GameCell
 
 	int temp = 20;
 
-	float VelX = 0, VelY = 0;
+	float VelX = 0.f, VelY = 0.f;
+	float Pressure = 0.f;
 };
 
 

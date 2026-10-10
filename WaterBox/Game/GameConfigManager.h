@@ -13,13 +13,13 @@ public:
 		return manager;
 	}
 
-	const std::vector <GameMaterial>& GetMaterials ();
-	const std::vector <MaterialCategory>& GetCategories();
+	std::vector <GameMaterial>& GetMaterials ();
+	std::vector <MaterialCategory>& GetCategories();
 
 	int GetMaterialIndex(std::string Name);
-	inline const GameMaterial& GetMaterial(int ID) const;
+	inline GameMaterial& GetMaterial(int ID);
 	int GetCategoryIndex(std::string Name);
-	const MaterialCategory& GetCategory(int ID);
+	MaterialCategory& GetCategory(int ID);
 
 	void LoadConfig();
 	bool LoadMaterials(std::string FileName);
@@ -44,10 +44,10 @@ private:
 
 	inline StateCategoryEnum ParseStateCategory(const std::string& stateStr);
 
-	const GameMaterial DefaultMaterial = { .MinColor = {0,0,0}, .MaxColor = {255,255,255}, .KeepColorProportions = false };
-	const MaterialCategory DefaultCategory = { .Name = "NO_CATEGORY", .CanBeShown = true, .Color = {255,255,0,255} };
+	GameMaterial DefaultMaterial = { .MinColor = {0,0,0}, .MaxColor = {255,255,255}, .KeepColorProportions = false };
+	MaterialCategory DefaultCategory = { .Name = "NO_CATEGORY", .CanBeShown = true, .Color = {255,255,0,255} };
 
-	const std::string MaterialsFileName = "Materials.json";
+	std::string MaterialsFileName = "Materials.json";
 
 
 
@@ -57,7 +57,7 @@ private:
 
 
 
-inline const GameMaterial& GameConfigManager::GetMaterial(int ID) const
+inline GameMaterial& GameConfigManager::GetMaterial(int ID)
 {
 #ifndef NDEBUG
 	if (!AreMaterialsLoaded)
