@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseWidget.h"
+#include "RenderManager.h"
 
 //class VerticalBoxWidget;
 //class GridBoxWidget;
@@ -26,5 +27,6 @@ protected:
     ScreenPoint SpacerDrawSize = { .x = 0, .y = 16, .IsVirtualCoordinates = true };
 
     PrimitivePoint LastSize = { 1,1 };
+    int LastInfoX = 0, LastInfoY = 0;
 
 };

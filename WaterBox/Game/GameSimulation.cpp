@@ -4,7 +4,7 @@
 
 void GameCell::Create(int ID)
 {
-    auto& mat = GameConfigManager::GetGameConfigManager().GetMaterial(ID);
+    auto& mat = GameConfigManager::GetGameConfigManager().Materials.GetElement(ID);
     Color = ColorStr::GetRandomColor(mat.MinColor, mat.MaxColor, mat.KeepColorProportions);
     Active = true;
     OriginalMaterialID = ID;
@@ -128,7 +128,7 @@ void GameSimulation::ProcessGravity()
         {
             i.Updating = 1;
 
-            auto cat = config.GetMaterial(i.OriginalMaterialID).StateCategory;
+            auto cat = config.Materials.GetElement(i.OriginalMaterialID).StateCategory;
             if (cat == StateCategoryEnum::liquid || cat == StateCategoryEnum::gas || cat == StateCategoryEnum::solid)
                 i.VelY += (i.VelY == 0) ? 0.1f : 0.1f;
         }
@@ -148,7 +148,7 @@ void GameSimulation::ProcessDefaultPhysic()
 
             tec.Updating = 2;
 
-            auto& mat = config.GetMaterial(tec.OriginalMaterialID);
+            auto& mat = config.Materials.GetElement(tec.OriginalMaterialID);
 
             if (mat.StateCategory == StateCategoryEnum::unmovable) continue;
 
@@ -249,8 +249,8 @@ void GameSimulation::DoCollision(GameCell& a, GameCell& b, uint8_t direction, in
 {
 
     auto& config = GameConfigManager::GetGameConfigManager();
-    auto& AMat = config.GetMaterial(a.OriginalMaterialID);
-    auto& BMat = config.GetMaterial(b.OriginalMaterialID);
+    auto& AMat = config.Materials.GetElement(a.OriginalMaterialID);
+    auto& BMat = config.Materials.GetElement(b.OriginalMaterialID);
 
     float DensSumm = AMat.Density + BMat.Density;
     if (AMat.Density <= 0.f || BMat.Density <= 0.f) return;
@@ -337,8 +337,8 @@ float GameSimulation::DoLiteCollision(GameCell& a, GameCell& b, uint8_t directio
 
     auto& config = GameConfigManager::GetGameConfigManager();
 
-    auto& mat = config.GetMaterial(a.OriginalMaterialID);
-    auto& target_mat = config.GetMaterial(b.OriginalMaterialID);
+    auto& mat = config.Materials.GetElement(a.OriginalMaterialID);
+    auto& target_mat = config.Materials.GetElement(b.OriginalMaterialID);
 
 
     if ((target_mat.StateCategory == StateCategoryEnum::liquid || target_mat.StateCategory == StateCategoryEnum::gas)
@@ -464,7 +464,7 @@ void GameSimulation::NormalizeVelocity()
         {
             i.Updating = 3;
 
-            auto cat = config.GetMaterial(i.OriginalMaterialID).StateCategory;
+            auto cat = config.Materials.GetElement(i.OriginalMaterialID).StateCategory;
             if (cat == StateCategoryEnum::unmovable)
             {
                 i.VelX = 0;

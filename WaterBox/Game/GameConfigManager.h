@@ -2,8 +2,10 @@
 #include "WaterBox.h"
 #include "GameMaterial.h"
 #include <unordered_map>
+#include "MapContainer.h"
 
 struct GameMaterial;
+struct SDL_Texture;
 
 class GameConfigManager
 {
@@ -13,34 +15,42 @@ public:
 		return manager;
 	}
 
-	std::vector <GameMaterial>& GetMaterials ();
-	std::vector <MaterialCategory>& GetCategories();
+	struct TextureStruct
+	{
+		float x = 0, y = 0;
+		SDL_Texture* texture = nullptr;
+	};
 
-	int GetMaterialIndex(std::string Name);
-	inline GameMaterial& GetMaterial(int ID);
-	int GetCategoryIndex(std::string Name);
-	MaterialCategory& GetCategory(int ID);
+	MapContainer <GameMaterial> Materials;
+	MapContainer <MaterialCategory> Categories;
+	MapContainer <TextureStruct> Images;
+
 
 	void LoadConfig();
-	bool LoadMaterials(std::string FileName);
-
+	bool LoadMaterials(std::string FilePath);
+	void LoadLocalization(std::string FilePath);
+	void LoadMod(std::string FilePath);
+	void LoadScript(std::string FilePath);
+	void LoadImage(std::string FilePath, std::string ImageName);
 	std::string GetString(std::string key);
+
+	std::string CurrentLanguage = "ru";
+	std::string DefaultDefaultLanguage = "en";
+
+	void SetRenderManager(class RenderManager* manager);
+
 
 private:
 	bool AreMaterialsLoaded = false;
-
-	std::vector<GameMaterial> Materials;
-	std::unordered_map <std::string, int> MaterialsLookupMap;
-
-	std::vector<MaterialCategory> Categories;
-	std::unordered_map <std::string, int> CategoriesLookupMap;
+	class RenderManager* renderer;
+	
 
 	std::unordered_map <std::string, std::string> Localization;
 
-	void LoadLocalization(std::string FileName);
+	
 
 	template <typename T>
-	int GetArrayIndex(const std::string& ID, std::vector <T>& elements, std::unordered_map <std::string, int>& NamesMap);
+	std::pair <T&, int> GetArrayIndex(const std::string& ID, MapContainer <T>& elements);
 
 	inline StateCategoryEnum ParseStateCategory(const std::string& stateStr);
 
@@ -52,26 +62,3 @@ private:
 
 
 };
-
-
-
-
-
-inline GameMaterial& GameConfigManager::GetMaterial(int ID)
-{
-#ifndef NDEBUG
-	if (!AreMaterialsLoaded)
-	{
-		LOG_FATAL("Materials are not loaded yet");
-
-		return DefaultMaterial;
-	}
-
-	if (ID < Materials.size())
-		return Materials[ID];
-	else
-		return DefaultMaterial;
-#else
-	return Materials[ID];
-#endif
-}

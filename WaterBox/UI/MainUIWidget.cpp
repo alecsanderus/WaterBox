@@ -17,6 +17,8 @@ void MainUIWidget::Init(RenderManager* renderer)
 	MainToolsBox = MainHorizontalBox->AddChild <ToolsUIWidget>();
 	
 	MainMaterialsWidget = MainHorizontalBox->AddChild<MaterialsUIWidget>();
+
+	MainToolsBox->Init();
 	MainMaterialsWidget->Init(renderer);
 }
 

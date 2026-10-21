@@ -33,6 +33,7 @@ public:
 
 
 	bool Init();
+	void InitMainWidget();
 	bool Render();
 	void Destroy();
 	bool ProcessEvent(const SDL_Event& event);
@@ -43,6 +44,7 @@ public:
 
 	void SetColor(ColorStr color);
 	void DrawRect(struct PrimitiveRect Rect);
+	void DrawTexture(struct SDL_Texture* texture, PrimitiveRect Rect);
 	void SetClipRect(const PrimitiveRect* rect);
 	void GetClipRect(PrimitiveRect& outRect);
 

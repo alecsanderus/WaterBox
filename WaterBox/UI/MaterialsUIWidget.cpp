@@ -37,8 +37,8 @@ void MaterialsUIWidget::Init(RenderManager* rend_manager)
 
 
     auto& manager = GameConfigManager::GetGameConfigManager();
-    auto& Materials = manager.GetMaterials();
-    auto& Categories = manager.GetCategories();
+    auto& Materials = manager.Materials.Elements;
+    auto& Categories = manager.Categories.Elements;
 
     std::vector <const GameMaterial*> MaterialsList;
 
@@ -64,10 +64,9 @@ void MaterialsUIWidget::Init(RenderManager* rend_manager)
 
         auto* CategoryScrollBox = TabsBox->AddChild<ScrollBoxWidget>();
 
-        auto ScrollBox = CategoryScrollBox->AddChild<ScrollBoxWidget>();
-        auto BottomGridBox = ScrollBox->AddChild<GridBoxWidget>();
+        auto BottomGridBox = CategoryScrollBox->AddChild<GridBoxWidget>();
 
-        ScrollsWidgets.push_back(ScrollBox);
+        ScrollsWidgets.push_back(CategoryScrollBox);
         GridsWidgets.push_back(BottomGridBox);
 
         CategoryScrollBoxes[CategoryID] = BottomGridBox;
@@ -101,8 +100,13 @@ void MaterialsUIWidget::Init(RenderManager* rend_manager)
 
 void MaterialsUIWidget::CheckSize(const PrimitivePoint& Size)
 {
-    if (LastSize == Size) return;
-    else LastSize = Size;
+    auto info = RenderManager::GetScreenInfo ();
+    if (LastSize == Size && info->ScreenSizeX != LastInfoX && info->ScreenSizeY != LastInfoY) return;
+    else {
+        LastSize = Size;
+        LastInfoX = info->ScreenSizeX;
+        LastInfoY = info->ScreenSizeY;
+    }
 
     TopGridBox->MaxPossibleSize = { .x = Size.x, .y = Size.y, .IsVirtualCoordinates = false};
     auto sizY = Size.y - TopGridBox->GetSize().y;

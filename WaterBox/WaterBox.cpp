@@ -4,6 +4,7 @@
 #include "RenderManager.h" 
 #include "ExeptionHandlers.h"
 #include "Game/GameManager.h"
+#include "Game/GameConfigManager.h"
 
 
 
@@ -44,16 +45,28 @@ int GameMain()
 
     bool Running = true;
 
-    LOG_INFO("Console launched");
+    LOG_INFO("Console launched");   
+
 
     RenderManager MainRenderManager;
 
     GameManager& MainGameManager = GameManager::GetGameManager();
     MainGameManager.Init();
 
-
-    if (!MainRenderManager.Init())
+ if (!MainRenderManager.Init())
         Running = false;
+ else
+ {
+
+     auto& MainConfigManager = GameConfigManager::GetGameConfigManager();
+     MainConfigManager.SetRenderManager(&MainRenderManager);
+     MainConfigManager.LoadConfig();
+
+     MainRenderManager.InitMainWidget();
+ }
+ 
+
+
 
     SDL_Event event;
    
@@ -95,9 +108,6 @@ int GameMain()
     MainRenderManager.Destroy();
     LOG_INFO("Exit");
 
-#ifdef ENABLE_CONSOLE
-    system("pause");
-#endif 
 
 
     return 0;

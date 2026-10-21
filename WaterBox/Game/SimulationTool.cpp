@@ -66,9 +66,9 @@ void SimulationTool::Tick()
     else if (MMB_State)
     {
         SelectedMaterial = Field(MPosX, MPosY).OriginalMaterialID;
-        auto& mat = conf.GetMaterial(SelectedMaterial);
+        auto& mat = conf.Materials.GetElement(SelectedMaterial);
         mat.ThisMaterialCardWidget->MakeClick();
-        auto& cat = conf.GetCategory(mat.CategoryID);
+        auto& cat = conf.Categories.GetElement(mat.CategoryID);
         cat.ThisMaterialCategoryWidget->MakeClick();
     }
     else

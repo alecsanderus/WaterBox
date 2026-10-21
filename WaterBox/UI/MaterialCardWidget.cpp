@@ -10,7 +10,7 @@
 
 void MaterialCardWidget::Init(class RenderManager* manager, int ID)
 {
-	auto& mat = GameConfigManager::GetGameConfigManager().GetMaterial(ID);
+	auto& mat = GameConfigManager::GetGameConfigManager().Materials.GetElement(ID);
 	mat.ThisMaterialCardWidget = this;
 
 	Children.clear();

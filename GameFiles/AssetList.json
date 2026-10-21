@@ -1,0 +1,8 @@
+{
+  "$schema": "AssetList.schema.json",
+  "materials": [ "Materials.json" ],
+  "default_language": "ru",
+  "languages": [ "ru.json" ],
+  "scripts": [],
+  "images": ["Tool_Brush.png"]
+}

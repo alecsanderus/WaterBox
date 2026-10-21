@@ -1,6 +1,7 @@
 #include "RenderManager.h"
 #include <SDL3/SDL.h>
 #include "SDL3_ttf/SDL_ttf.h"
+#include <SDL3_image/SDL_image.h>
 #include "WaterBox.h"
 #include "UI/MainUIWidget.h"
 #include "UI/ScreenPositionContainers.h"
@@ -101,10 +102,13 @@ bool RenderManager::Init()
 
     NeedToDestroyWindow = true;
 
-  
-    MainWidget.Init(this);
 
     return true;
+}
+
+void RenderManager::InitMainWidget()
+{
+    MainWidget.Init(this);
 }
 
 bool RenderManager::Render()
@@ -112,7 +116,7 @@ bool RenderManager::Render()
     SDL_SetRenderDrawColor(renderer, 100, 100, 255, 255);
     SDL_RenderClear(renderer);    
 
-    MainWidget.Render(*this, {0,0});
+    MainWidget.Render(*this, {0,0});  
 
     SDL_RenderPresent(renderer);
 
@@ -174,6 +178,7 @@ bool RenderManager::ProcessEvent(const SDL_Event& EventSDL)
             static bool FullScreen = false;
             FullScreen = !FullScreen;
             SDL_SetWindowFullscreen(window, FullScreen);
+            UpdateScreenInfo();
         }
 
 
@@ -204,6 +209,21 @@ void RenderManager::DrawRect(PrimitiveRect Rect)
     };
    
     SDL_RenderFillRect(renderer, &rect);
+}
+
+void RenderManager::DrawTexture(SDL_Texture* texture, PrimitiveRect Rect)
+{
+    if (texture)
+    {
+        SDL_FRect rect{
+        static_cast<float>(Rect.pos.x),
+        static_cast<float>(Rect.pos.y),
+        static_cast<float>(Rect.size.x),
+        static_cast<float>(Rect.size.y)
+        };
+
+        SDL_RenderTexture(renderer, texture, nullptr, &rect);
+    }
 }
 
 void RenderManager::SetClipRect(const PrimitiveRect* rect)

@@ -1,34 +1,20 @@
 #include "ScrollBoxWidget.h"
 #include "RenderManager.h"
+#include "InputEvent.h"
 
 
 
 bool ScrollBoxWidget::ProcessEvent(const in::InputEvent& event) {
-    // 1. Обработка прокрутки колёсика мыши (Затычка/Логика)
-    // TODO: Интегрируйте ваши типы событий ScreenEvent (например, event.type == EventType::MouseWheel)
-  /*
-    if (event.IsMouseWheel()) {
-        int wheelDelta = event.GetWheelDelta(); // Например, +1 или -1
-        int speed = 20; // Скорость скролла в пикселях
-        
-        ScrollOffset += wheelDelta * speed;
-        
-        // Ограничиваем скролл, чтобы не выходить за рамки содержимого
-        int maxOffset = GetMaxScrollOffset();
-        ScrollOffset = std::clamp(ScrollOffset, maxOffset, 0);
-        
-        return true; // Событие перехвачено
-    }
-    */
-    
-    // 2. Передача событий дочернему элементу (единственному наследнику)
-if (!Children.empty() && Children[0]) {
-    // Модифицируем событие с учетом смещения скролла, если это необходимо 
-    // (например, если координаты мыши в событии абсолютные, их нужно сместить на ScrollOffset)
-    return Children[0]->ProcessEvent(event);
-}
+    if (event.isMouseScroll())
+    {
+        ScrollOffset += std::get <in::MouseScrollEvent>(event.data).deltaY * ScreenPoint{ .x = 30, .IsVirtualCoordinates = true }.GetNormalizedPoint().x;
 
-return false;
+        int maxOffset = GetMaxScrollOffset();
+        ScrollOffset = std::clamp(ScrollOffset, -maxOffset, 0);
+        return 1;
+    } 
+
+    return BaseWidget::ProcessEvent(event);
 }
 
 
@@ -48,7 +34,7 @@ void ScrollBoxWidget::Render(RenderManager& renderer, const PrimitivePoint& Posi
         .pos = Position,
         .size = mySize       
     };
-    //renderer.SetClipRect(&newClipRect);  
+    renderer.SetClipRect(&newClipRect);  
 
     PrimitivePoint childPosition = Position;
     if (Direction == ScrollDirection::Vertical) {
@@ -60,7 +46,7 @@ void ScrollBoxWidget::Render(RenderManager& renderer, const PrimitivePoint& Posi
 
     Children[0]->Render(renderer, childPosition);
 
-    //renderer.SetClipRect(&oldClipRect);
+    renderer.SetClipRect(&oldClipRect);
 }
 
 
@@ -78,9 +64,13 @@ int ScrollBoxWidget::GetMaxScrollOffset() {
     PrimitivePoint childSize = Children[0]->GetSize();
 
     if (Direction == ScrollDirection::Vertical) {
-        return std::min(0, mySize.y - childSize.y);
+        int res = std::max(0, childSize.y - mySize.y);
+        if (res > 0) res += mySize.y * 0.2;
+        return  res;
     }
     else {
-        return std::min(0, mySize.x - childSize.x);
+        int res = std::max(0, childSize.x - mySize.x);
+        if (res > 0) res += mySize.x * 0.2;
+        return res;
     }
 }

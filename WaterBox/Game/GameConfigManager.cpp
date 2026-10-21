@@ -1,77 +1,29 @@
 #include "GameConfigManager.h"
 #include "GameSimulation.h"
 #include "SDL3/SDL.h"
+#include <SDL3_image/SDL_image.h>
+#include "RenderManager.h"
+
 #include "nlohmann/json.hpp"
 
 
 
-std::vector<GameMaterial>& GameConfigManager::GetMaterials()
-{
-    if (!AreMaterialsLoaded)
-        LoadConfig();
-	return Materials;
-}
-
-std::vector<MaterialCategory>& GameConfigManager::GetCategories()
-{
-    if (!AreMaterialsLoaded)
-        LoadConfig();
-    return Categories;
-}
-
-int GameConfigManager::GetMaterialIndex(std::string Name)
-{
-    auto ptr = MaterialsLookupMap.find(Name);
-    if (ptr != MaterialsLookupMap.end())
-        return ptr->second;
-    else
-        return 0;
-}
-
-
-int GameConfigManager::GetCategoryIndex(std::string Name)
-{
-    auto ptr = CategoriesLookupMap.find(Name);
-    if (ptr != CategoriesLookupMap.end())
-        return ptr->second;
-    else
-        return 0;
-}
-
-MaterialCategory& GameConfigManager::GetCategory(int ID)
-{
-    if (!AreMaterialsLoaded)
-        LoadConfig();
-
-    if (!AreMaterialsLoaded)
-    {
-        LOG_FATAL("Categories are not loaded yet");
-
-        return DefaultCategory;
-    }
-
-    if (ID < Categories.size())
-        return Categories[ID];
-    else
-        return DefaultCategory;
-}
-
 void GameConfigManager::LoadConfig()
 {
-    bool OK = LoadMaterials(MaterialsFileName);
-    LoadLocalization("ru");
+    LoadMod(GlobalPathPrefix);
 
-    AreMaterialsLoaded = OK;
+  
+    AreMaterialsLoaded = true;
 
 }
 
-bool GameConfigManager::LoadMaterials(std::string FileName)
+bool GameConfigManager::LoadMaterials(std::string FilePath)
 {  
     size_t fileSize = 0;
-    char* fileData = (char*)SDL_LoadFile((GlobalPathPrefix + FileName).c_str(), &fileSize);
+    char* fileData = (char*)SDL_LoadFile(FilePath.c_str(), &fileSize);
 
     if (!fileData) {
-        std::string error = "Cant read file name:  " + FileName + "  , SDL3 error : " + std::string(SDL_GetError());
+        std::string error = "Cant read file name:  " + FilePath + "  , SDL3 error : " + std::string(SDL_GetError());
         LOG_ERROR(error);
         return false;
     }
@@ -83,18 +35,15 @@ bool GameConfigManager::LoadMaterials(std::string FileName)
        
         if (json.contains("Materials") && json["Materials"].is_array()) {
 
-            Materials.reserve(Materials.size() + json["Materials"].size());
+            Materials.Elements.reserve(Materials.Elements.size() + json["Materials"].size());
 
             for (const auto& item : json["Materials"]) {
 
                 auto Name =  item["name"].get<std::string>();
-                int ID = GetArrayIndex(Name, Materials, MaterialsLookupMap);
-                GameMaterial& TecMat = Materials [ID];
+                auto [TecMat, ID] = GetArrayIndex(Name, Materials);
+               
 
-                TecMat.Name = Name;  
-                TecMat.ID = ID;
-
-                TecMat.CategoryID = GetArrayIndex(item["category_key"].get <std::string>(), Categories, CategoriesLookupMap);
+                TecMat.CategoryID = GetArrayIndex(item["category_key"].get <std::string>(), Categories).second;
 
                 TecMat.ShowPriority = item.value <int>("show_priority", 0);
                 TecMat.CanBeShown = item.value <bool>("can_be_shown", true);
@@ -129,18 +78,13 @@ bool GameConfigManager::LoadMaterials(std::string FileName)
         }
         if (json.contains("Categories") && json["Categories"].is_array()) {
 
-            Categories.reserve(Categories.size() + json["Categories"].size());
+            Categories.Elements.reserve(Categories.Elements.size() + json["Categories"].size());
 
             for (const auto& item : json["Categories"]) {
 
                 auto Name = item["name"].get<std::string>();
-                int ID = GetArrayIndex(Name, Categories, CategoriesLookupMap);
-                MaterialCategory& TecCat = Categories[GetArrayIndex(Name, Categories, CategoriesLookupMap)];
-
-                TecCat.Name = Name;
-                TecCat.ID = ID;
-
-
+                auto [TecCat, ID] = GetArrayIndex(Name, Categories);
+              
                 TecCat.CanBeShown = item.value <bool>("can_be_shown", true);
 
                 TecCat.Color.r = item.value <int>("color_R", 0);
@@ -149,10 +93,10 @@ bool GameConfigManager::LoadMaterials(std::string FileName)
             }
         }
 
-        LOG_INFO("Materials loaded from " + FileName);
+        LOG_INFO("Materials loaded from " + FilePath);
     }
     catch (const nlohmann::json::parse_error& e) {
-        std::string err = "Cant parse  " + FileName + "  JSON: " + std::string(e.what());
+        std::string err = "Cant parse  " + FilePath + "  JSON: " + std::string(e.what());
         LOG_ERROR(err);
         SDL_free(fileData);
         return false;
@@ -170,12 +114,99 @@ std::string GameConfigManager::GetString(std::string key)
         return key;
 }
 
+void GameConfigManager::SetRenderManager(RenderManager* manager)
+{renderer = manager;}
 
 
-void GameConfigManager::LoadLocalization(std::string FileName)
+
+void GameConfigManager::LoadLocalization(std::string FilePath)
 {
     size_t fileSize = 0;
-    std::string FullFileName = GlobalPathPrefix + FileName + ".json";
+
+    char* fileData = (char*)SDL_LoadFile(FilePath.c_str(), &fileSize);
+
+    if (!fileData) {
+        std::string error = "Cant read file name:  " + FilePath + "  , SDL3 error : " + std::string(SDL_GetError());
+        LOG_ERROR(error);
+        return;
+    }
+
+    try {
+        auto json = nlohmann::json::parse(fileData);
+
+        SDL_free(fileData);
+                
+        if (json.is_object()) {
+
+            for (const auto& [key, value] : json.items()) {
+
+                if (value.is_string()) 
+                    Localization[key] = value.get<std::string>();
+               
+                else                  
+                    Localization[key] = value.dump();
+                
+            }
+        }
+      
+        LOG_INFO("Localization loaded from " + FilePath);
+    }
+    catch (const nlohmann::json::parse_error& e) {
+        std::string err = "Cant parse  " + FilePath + "  JSON: " + std::string(e.what());
+        LOG_ERROR(err);
+        SDL_free(fileData);
+        return;
+    }
+}
+
+namespace
+{
+    std::string SelectLanguage(const nlohmann::json& root, std::string CurrentLang, std::string DefaultLang)
+    {
+        if (!root.contains("languages") || !root["languages"].is_array() || root["languages"].empty()) 
+            return "";
+        
+
+        std::vector<std::string> languages;
+        for (const auto& item : root["languages"])
+            if (item.is_string()) 
+                languages.push_back(item.get<std::string>());        
+
+        if (languages.empty()) return "";
+
+
+        auto findValue = [&languages](const std::string& target) -> bool {
+            return std::find(languages.begin(), languages.end(), target) != languages.end();
+            };
+
+
+        if (findValue(CurrentLang + ".json")) {
+            return CurrentLang + ".json";
+        }      
+        if (findValue(DefaultLang + ".json")) {          
+            return DefaultLang + ".json";
+        }
+          
+
+        if (root.contains("default_language") && root["default_language"].is_string()) {
+            std::string jsonDefault = root["default_language"].get<std::string>();
+
+            if (findValue(jsonDefault)) 
+                return jsonDefault;
+            
+            if (!jsonDefault.ends_with(".json") && findValue(jsonDefault + ".json"))
+                return jsonDefault + ".json";
+            
+        }
+
+        return languages[0];
+    }
+}
+
+void GameConfigManager::LoadMod(std::string FilePath)
+{
+    size_t fileSize = 0;
+    std::string FullFileName = FilePath + "AssetList.json";
 
     char* fileData = (char*)SDL_LoadFile(FullFileName.c_str(), &fileSize);
 
@@ -190,20 +221,33 @@ void GameConfigManager::LoadLocalization(std::string FileName)
 
         SDL_free(fileData);
 
-        if (json.is_object()) {
+        LOG_INFO("Start loading mod from " + FullFileName);
 
-            for (const auto& [key, value] : json.items()) {
+        if (json.contains("materials") && json["materials"].is_array())
+            for (const auto& value : json["materials"])
+                if (value.is_string())
+                    LoadMaterials(FilePath + std::string(value));
 
-                if (value.is_string()) 
-                    Localization[key] = value.get<std::string>();
-               
-                else                  
-                    Localization[key] = value.dump();
-                
-            }
+        auto SelectedFile = SelectLanguage(json, CurrentLanguage, DefaultDefaultLanguage);
+        if (SelectedFile != "")
+            LoadLocalization(FilePath + SelectedFile);
+
+        if (json.contains("scripts") && json["scripts"].is_array())
+            for (const auto& value : json["scripts"])
+                if (value.is_string())
+                    LoadScript(FilePath + std::string(value));
+
+        if (json.contains("images") && json["images"].is_array())
+        {
+            for (const auto& value : json["images"])
+                if (value.is_string())
+                    LoadImage(FilePath + std::string(value), value);
+
+            LOG_INFO(std::to_string (json["images"].size()) + std::string(" texture(s) loaded"));
         }
-      
-        LOG_INFO("Localization loaded from " + FullFileName);
+
+
+        LOG_INFO("Mod loaded from " + FullFileName);
     }
     catch (const nlohmann::json::parse_error& e) {
         std::string err = "Cant parse  " + FullFileName + "  JSON: " + std::string(e.what());
@@ -213,25 +257,37 @@ void GameConfigManager::LoadLocalization(std::string FileName)
     }
 }
 
-template <typename T>
-int GameConfigManager::GetArrayIndex(const std::string& ID, std::vector <T>& elements, std::unordered_map <std::string, int>& NamesMap) {
+void GameConfigManager::LoadScript(std::string FilePath)
+{}
 
-    auto it = NamesMap.find(ID);
-    if (it != NamesMap.end()) {
-        return it->second;
+void GameConfigManager::LoadImage(std::string FilePath, std::string ImageName)
+{
+    auto rend = renderer->GetSDLRenderer();
+    auto tex = IMG_LoadTexture(rend, FilePath.c_str());
+
+    if (!tex) {
+        LOG_ERROR("LoadImage error, FilePath:" + FilePath + "\n" +  SDL_GetError());       
+        return;
     }
 
-    T placeholder;
-    placeholder.ID = elements.size();
-    placeholder.Name = ID; 
-    placeholder.IsLoaded = false;
+    auto [textrPointer, index] = Images.ReserveAndGetElement(ImageName);
+    textrPointer.texture = tex;
 
-    elements.push_back(placeholder);
+    SDL_GetTextureSize(tex, &textrPointer.x, &textrPointer.y);
 
-    int newIndex = elements.size() - 1;
-    NamesMap[ID] = newIndex;
+    SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_NEAREST);
+}
 
-    return newIndex;
+template <typename T>
+std::pair <T&, int> GameConfigManager::GetArrayIndex(const std::string& ID, MapContainer <T>& elements) {
+
+    auto par = elements.ReserveAndGetElement (ID);  
+   
+    par.first.ID = par.second;
+    par.first.Name = ID;
+    par.first.IsLoaded = false;
+
+    return par;
 }
 
 StateCategoryEnum GameConfigManager::ParseStateCategory(const std::string& stateStr)
