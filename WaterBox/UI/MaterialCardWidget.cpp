@@ -56,7 +56,7 @@ void MaterialCardWidget::Init(class RenderManager* manager, int ID)
 
 void MaterialCardWidget::SetWidth(int width)
 {
-	text->SetWrapping(width);
+	text->SetWrapping(width - ScreenPoint { .x = OffsetX, .IsVirtualCoordinates = true }.GetNormalizedPoint().x);
 }
 
 void MaterialCardWidget::MakeClick()

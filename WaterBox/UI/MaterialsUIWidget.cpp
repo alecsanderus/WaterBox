@@ -120,6 +120,6 @@ void MaterialsUIWidget::CheckSize(const PrimitivePoint& Size)
         i->MaxPossibleSize = Scrolls;
    
     for (auto i : MaterialWidgets)    
-        i->SetWidth(sizY);
+        i->SetWidth(Size.x);
     
 }
