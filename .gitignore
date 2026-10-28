@@ -87,6 +87,7 @@ android/build/
 
 # Кэш и логи Android инструментов
 android/.cxx/
+android/.idea/
 android/WaterBox/.cxx/
 
 android/.externalNativeBuild/

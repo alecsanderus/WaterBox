@@ -94,12 +94,3 @@ FetchContent_MakeAvailable(SDL3_image)
 
 
 add_subdirectory ("WaterBox")
-
-
-message(STATUS "========== SDL OPTIONS ==========")
-message(STATUS "SDL_EXAMPLES       = ${SDL_EXAMPLES}")
-message(STATUS "SDL_TESTS          = ${SDL_TESTS}")
-message(STATUS "SDL_TEST_LIBRARY   = ${SDL_TEST_LIBRARY}")
-message(STATUS "SDLTTF_SAMPLES     = ${SDLTTF_SAMPLES}")
-message(STATUS "SDLIMAGE_SAMPLES   = ${SDLIMAGE_SAMPLES}")
-message(STATUS "=================================")
