@@ -13,6 +13,7 @@ public:
 
 	enum class ToolType : uint8_t {
 		Draw,
+		Throw,
 		Heat,
 		Move
 	};
@@ -23,6 +24,8 @@ public:
 
 	void SetMaterial(int ID);
 	void SetTool(ToolType Type);
+	void SetTool(int ID);
+
 	void Tick();
 	
 

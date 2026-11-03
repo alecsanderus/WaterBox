@@ -4,6 +4,7 @@
 //class VerticalBoxWidget;
 //class GridBoxWidget;
 //class ScrollBoxWidget;
+class ToolWidget;
 
 class ToolsUIWidget : public BaseWidget
 {
@@ -13,5 +14,6 @@ public:
 protected:
 
     class VerticalBoxWidget* MainVerticalBox = nullptr;
-   
+    ToolWidget* PaintButton;
+    ToolWidget* ThrowButton;
 };

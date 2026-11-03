@@ -139,9 +139,16 @@ void GameSimulation::ProcessDefaultPhysic()
 {
     auto& config = GameConfigManager::GetGameConfigManager();
 
+   
+    bool reverseX = (TecTick & 1);
+    int startX = reverseX ? GameSizeX - 1 : 0;
+    int endX = reverseX ? -1 : GameSizeX;
+    int stepX = reverseX ? -1 : 1;
+
+
     for (int y = GameSizeY -1; y >= 0 ; y--)
     {
-        for (int x = 0; x < GameSizeX; x++)
+        for (int x = startX; x != endX; x += stepX)
         {
             auto& tec = GameField(x, y);
             if (!tec.Active || tec.Updating == 2) continue;
