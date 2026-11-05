@@ -95,7 +95,7 @@ android/captures/
 *.hprof
 
 
-!third_party/
-!third_party/**
+third_party/
+third_party/**
 
-android/WaterBox/.cxx/
+.idea/

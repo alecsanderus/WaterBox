@@ -2,9 +2,9 @@
 #include "GameConfigManager.h"
 
 
-void GameCell::Create(int ID)
+void GameCell::Create(const int ID)
 {
-    auto& mat = GameConfigManager::GetGameConfigManager().Materials.GetElement(ID);
+    const auto& mat = GameConfigManager::GetGameConfigManager().Materials.GetElement(ID);
     Color = ColorStr::GetRandomColor(mat.MinColor, mat.MaxColor, mat.KeepColorProportions);
     Active = true;
     OriginalMaterialID = ID;
@@ -19,6 +19,7 @@ void GameCell::Destroy()
 {
     Color = { 0,0,0,255 };
     Active = false;
+    Pressure = 0;
 }
 
 
@@ -32,11 +33,12 @@ std::pair<size_t, size_t> GameSimulation::GetGameFieldSize() const
     return { GameSizeX, GameSizeY };
 }
 
-void GameSimulation::SetGameFieldSize(size_t x, size_t y)
+void GameSimulation::SetGameFieldSize(const int x, const int y)
 {
     GameSizeX = x;
     GameSizeY = y;
     GameField.resize(GameSizeX, GameSizeY);
+    /* тут была ёлка
 
 
 
@@ -104,7 +106,7 @@ void GameSimulation::SetGameFieldSize(size_t x, size_t y)
         GameField(cx + i, cy - i).Color = star; // Северо-восток
         GameField(cx - i, cy + i).Color = star; // Юго-запад
         GameField(cx + i, cy + i).Color = star; // Юго-восток
-    }
+    }*/
 }
 
 void GameSimulation::SimulationTick()
@@ -114,6 +116,8 @@ void GameSimulation::SimulationTick()
     ProcessGravity();
 
     ProcessDefaultPhysic();
+
+    ProcessLiquidPhysic();
    
     NormalizeVelocity();
 }
@@ -130,7 +134,7 @@ void GameSimulation::ProcessGravity()
 
             auto cat = config.Materials.GetElement(i.OriginalMaterialID).StateCategory;
             if (cat == StateCategoryEnum::liquid || cat == StateCategoryEnum::gas || cat == StateCategoryEnum::solid)
-                i.VelY += (i.VelY == 0) ? 0.1f : 0.1f;
+                i.VelY += 0.1f;
         }
     }    
 }
@@ -162,8 +166,8 @@ void GameSimulation::ProcessDefaultPhysic()
             int StepsX = static_cast<int>(tec.VelX);
             int StepsY = static_cast<int>(tec.VelY);
 
-            StepsX += (RandomFloat(x, y, TecTick) < abs(tec.VelX - StepsX)) * ((tec.VelX > 0) ? 1 : -1);
-            StepsY += (RandomFloat(x, y, TecTick) < abs(tec.VelY - StepsY)) * ((tec.VelY > 0) ? 1 : -1);
+            StepsX += (RandomFloat(x, y, TecTick) < abs(tec.VelX - static_cast<float> (StepsX))) * ((tec.VelX > 0) ? 1 : -1);
+            StepsY += (RandomFloat(x, y, TecTick) < abs(tec.VelY - static_cast<float> (StepsY))) * ((tec.VelY > 0) ? 1 : -1);
 
             if (StepsX == 0 && StepsY == 0) continue;
 
@@ -178,10 +182,8 @@ void GameSimulation::ProcessDefaultPhysic()
             int MaxSteps = std::max(AbsStepsX, AbsStepsY);
             float AccumX = 0.0f;
             float AccumY = 0.0f;
-            float RatioX = (MaxSteps > 0) ? static_cast<float>(AbsStepsX) / MaxSteps : 0.0f;
-            float RatioY = (MaxSteps > 0) ? static_cast<float>(AbsStepsY) / MaxSteps : 0.0f;
-
-            bool hit_something = false;
+            float RatioX = (MaxSteps > 0) ? static_cast<float>(AbsStepsX) / static_cast<float> (MaxSteps) : 0.0f;
+            float RatioY = (MaxSteps > 0) ? static_cast<float>(AbsStepsY) / static_cast<float> (MaxSteps) : 0.0f;
 
 
             for (int step = 0; step < MaxSteps; step++)
@@ -207,7 +209,6 @@ void GameSimulation::ProcessDefaultPhysic()
                     auto& NewTec = GameField(tecX, tecY);
                     if (NextX < 0 || NextX >= GameSizeX) NewTec.VelX = 0.0f;
                     if (NextY < 0 || NextY >= GameSizeY) NewTec.VelY = 0.0f;
-                    hit_something = true;
                     break;
                 }
 
@@ -233,7 +234,7 @@ void GameSimulation::ProcessDefaultPhysic()
                 }
 
                 float stopping = DoLiteCollision(GameField(tecX, tecY), target, Direction, tecX, tecY, NextX, NextY);
-                MaxSteps *= stopping;
+                MaxSteps *= static_cast<int> (stopping);
                                             
                 if (stopping > 0)
                 {
@@ -242,9 +243,7 @@ void GameSimulation::ProcessDefaultPhysic()
                     tecY = NextY;
                     continue;
                 }
-
-                hit_something = true;
-                break; 
+                break;
             }
 
 
@@ -252,7 +251,86 @@ void GameSimulation::ProcessDefaultPhysic()
     }
 }
 
-void GameSimulation::DoCollision(GameCell& a, GameCell& b, uint8_t direction, int x, int y, float size)
+void GameSimulation::ProcessLiquidPhysic() {
+    auto& config = GameConfigManager::GetGameConfigManager();
+
+
+    bool reverse = (TecTick & 1);
+    int step = reverse ? -1 : 1;
+
+    int startX = reverse ? GameSizeX - 1 : 0;
+    int endX = reverse ? 0 : GameSizeX - 1;
+    int startY = reverse ? GameSizeY - 2 : 0;
+    int endY = reverse ? -1 : GameSizeY - 1;
+
+
+
+    for (int y = 0; y < GameSizeY; y++)
+    {
+        for (int x = startX; x != endX; x += step) {
+            auto& tec = GameField(x, y);
+            if (!tec.Active || tec.Updating == 4) continue;
+
+            tec.Updating = 4;
+
+            auto& mat = config.Materials.GetElement(tec.OriginalMaterialID);
+
+            if (mat.StateCategory != StateCategoryEnum::liquid) continue;
+
+            GameCell& tecB = GameField(x + step, y);
+            auto& matB = config.Materials.GetElement(tecB.OriginalMaterialID);
+
+            if (matB.StateCategory != StateCategoryEnum::liquid) continue;
+
+            float diff = tec.Pressure - tecB.Pressure;
+            diff *= static_cast<float> (step);
+
+            tec.Pressure = std::max (tecB.Pressure, tec.Pressure);
+            tecB.Pressure = std::max (tecB.Pressure, tec.Pressure);
+
+           // tec.VelX += diff * 0.001f;
+          //  tecB.VelX += diff * 0.001f;
+        }
+    }
+
+
+    for (int y = startY; y != endY; y += step) {
+        for (int x = 0; x < GameSizeX; x ++) {
+            auto& tec = GameField(x, y);
+            if (!tec.Active || tec.Updating == 5) continue;
+
+            tec.Updating = 5;
+
+            auto& mat = config.Materials.GetElement(tec.OriginalMaterialID);
+
+            if (mat.StateCategory != StateCategoryEnum::liquid) continue;
+
+            GameCell& tecB = GameField(x, y + 1);
+            auto& matB = config.Materials.GetElement(tecB.OriginalMaterialID);
+
+            if (matB.StateCategory != StateCategoryEnum::liquid || !tecB.Active) continue;
+
+            float TargetPressure = tec.Pressure + mat.Density;
+
+            float diff = TargetPressure - tecB.Pressure;
+
+            if (diff > 0)
+            {
+                tecB.Pressure = TargetPressure;
+            }
+            else
+                tec.Pressure = tecB.Pressure - mat.Density;
+
+
+
+         //   tec.VelY += diff;
+         //   tecB.VelY += diff;
+        }
+    }
+}
+
+
+void GameSimulation::DoCollision(GameCell& a, GameCell& b, const uint8_t direction, int x, int y, const float size)
 {
 
     auto& config = GameConfigManager::GetGameConfigManager();
@@ -319,13 +397,13 @@ void GameSimulation::DoCollision(GameCell& a, GameCell& b, uint8_t direction, in
     {
         float FrictionY = Fr * vRelX;
         bool vyN = a.VelY >= 0;
-        a.VelY = std::max(abs(a.VelY) - abs(FrictionY), 0.f) * ((vyN) ? 1 : -1);
+        a.VelY = std::max(abs(a.VelY) - abs(FrictionY), 0.f) * ((vyN) ? 1.f : -1.f);
     }
     else
     {
         float FrictionX = Fr * vRelY;
         bool vxN = a.VelX >= 0;
-        a.VelX = std::max(abs(a.VelX) - abs(FrictionX), 0.f) * ((vxN) ? 1 : -1);
+        a.VelX = std::max(abs(a.VelX) - abs(FrictionX), 0.f) * ((vxN) ? 1.f : -1.f);
     }
 
   
@@ -344,9 +422,10 @@ float GameSimulation::DoLiteCollision(GameCell& a, GameCell& b, uint8_t directio
 
     auto& config = GameConfigManager::GetGameConfigManager();
 
-    auto& mat = config.Materials.GetElement(a.OriginalMaterialID);
-    auto& target_mat = config.Materials.GetElement(b.OriginalMaterialID);
+    const auto& mat = config.Materials.GetElement(a.OriginalMaterialID);
+    const auto& target_mat = config.Materials.GetElement(b.OriginalMaterialID);
 
+if (mat.StateCategory == StateCategoryEnum::liquid || target_mat.StateCategory == StateCategoryEnum::liquid) return 0;
 
     if ((target_mat.StateCategory == StateCategoryEnum::liquid || target_mat.StateCategory == StateCategoryEnum::gas)
         && mat.Density > target_mat.Density)
@@ -484,6 +563,10 @@ void GameSimulation::NormalizeVelocity()
                 if (abs(i.VelX) < 0.01f) i.VelX = 0.f;
                 if (abs(i.VelY) < 0.01f) i.VelY = 0.f;
 
+                if (cat == StateCategoryEnum::liquid)
+                {
+                    i.Pressure = std::max (i.Pressure * 0.95f, 0.f);
+                }
 
             }
         }
@@ -505,7 +588,7 @@ inline uint32_t GameSimulation::Deterministic_hash(uint32_t x, uint32_t y, uint3
     return state;
 }
 
-inline float GameSimulation::RandomFloat(uint32_t x, uint32_t y, uint32_t tick)
+inline float GameSimulation::RandomFloat(const uint32_t x, const uint32_t y, const uint32_t tick)
 {
-    return (float)Deterministic_hash(x, y, tick) / (float)UINT32_MAX;
+    return static_cast<float>(Deterministic_hash(x, y, tick)) / static_cast<float>(UINT32_MAX);
 }

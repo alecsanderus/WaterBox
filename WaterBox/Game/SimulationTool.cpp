@@ -97,7 +97,16 @@ void SimulationTool::Tick()
 	}break;
 
 
+		case 3: {
 
+			UseLineSquareTool(LastMPosX, LastMPosY, MPosX, MPosY,
+				[&Field](int x, int y) {
+					auto& tec = Field(x, y);
+					if (auto& mat = GameConfigManager::GetGameConfigManager().Materials.GetElement(tec.OriginalMaterialID);
+						tec.Active && mat.StateCategory == StateCategoryEnum::liquid) tec.Pressure += 10.f;
+				});
+
+		}break;
 
 	case 11: {
 
@@ -143,6 +152,19 @@ void SimulationTool::Tick()
 
 }
 
+int SimulationTool::GetGameViewType() const {
+	return GameViewType;
+}
+
+void SimulationTool::SetGameViewType(const int Type) {
+	GameViewType = std::clamp(Type, 0, MaxGameViewType);
+}
+
+void SimulationTool::IncreaseGameViewType() {
+	GameViewType++;
+	if (GameViewType > MaxGameViewType)
+		GameViewType = 0;
+}
 
 
 void SimulationTool::ProcessMouseButtonEvent(in::MouseButtonEvent event)

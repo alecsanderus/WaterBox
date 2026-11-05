@@ -32,6 +32,8 @@ void GameViewWidget::UpdateTexture()
     auto& MainGameManager = GameManager::GetGameManager();
     auto& MainGameSimulation = MainGameManager.GetSimulation();
     const std::vector<GameCell>& Grid = MainGameSimulation.GetGameField().GetVector();
+    auto& MainSimulationTool = MainGameManager.GetSimulationTool();
+    int type = MainSimulationTool.GetGameViewType();
 
 
     if (auto [NewX, NewY] = MainGameSimulation.GetGameFieldSize(); SizeX != NewX || SizeY != NewY)
@@ -49,16 +51,66 @@ void GameViewWidget::UpdateTexture()
     {
         const auto& color = Grid[tec].Color;
 
-        Pixels[tec] =
+        switch (type) {
+            case 0: {
+                Pixels[tec] =
             (static_cast<uint32_t>(color.r) << 24) |
             (static_cast<uint32_t>(color.g) << 16) |
             (static_cast<uint32_t>(color.b) << 8) |
             static_cast<uint32_t>(255);
+                break;
+            }
+
+            case 1: {
+                const auto& gg = Grid[tec];
+                Pixels[tec] =
+                    (static_cast<uint32_t>(gg.VelX * 5 + 120) << 24) |
+                    (static_cast<uint32_t>(gg.OriginalMaterialID * 50) << 16) |
+                    (static_cast<uint32_t>(gg.VelY * 5 + 120) << 8) |
+                    static_cast<uint32_t>(255);
+                break;
+            }
+
+            case 2: {
+                const auto& gg = Grid[tec];
+                Pixels[tec] =
+                    (static_cast<uint32_t>(gg.Pressure / 2000) << 24) |
+                    (static_cast<uint32_t>(170) << 16) |
+                    (static_cast<uint32_t>(170) << 8) |
+                    static_cast<uint32_t>(255);
+                break;
+            }
+
+            default:
+            {
+                Pixels[tec] =
+            (static_cast<uint32_t>(color.r) << 24) |
+            (static_cast<uint32_t>(color.g) << 16) |
+            (static_cast<uint32_t>(color.b) << 8) |
+            static_cast<uint32_t>(255);
+                break;
+            }
+
+
+        }
+        /**/
+
+
         /*const auto& gg = Grid[tec];
         Pixels[tec] =
             (static_cast<uint32_t>(gg.VelX * 5 + 120) << 24) |
             (static_cast<uint32_t>(gg.OriginalMaterialID * 50) << 16) |
             (static_cast<uint32_t>(gg.VelY * 5 + 120) << 8) |
+            static_cast<uint32_t>(255);*/
+
+
+
+        /*
+        const auto& gg = Grid[tec];
+        Pixels[tec] =
+            (static_cast<uint32_t>(gg.Pressure / 2000) << 24) |
+            (static_cast<uint32_t>(170) << 16) |
+            (static_cast<uint32_t>(170) << 8) |
             static_cast<uint32_t>(255);*/
     }
 

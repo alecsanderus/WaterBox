@@ -42,7 +42,9 @@ copy_game_files (WaterBoxConsole)
 target_compile_definitions (WaterBoxConsole PRIVATE ENABLE_CONSOLE)
 
 # Цель 2: Без консоли
-add_executable(WaterBox WIN32 ${WATERBOX_SOURCES})
+add_executable(WaterBox WIN32 ${WATERBOX_SOURCES}
+        UI/ChangeViewWidget.cpp
+        UI/ChangeViewWidget.h)
 target_link_libraries(WaterBox PRIVATE SDL3::SDL3 nlohmann_json::nlohmann_json SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image)
 target_include_directories(WaterBox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 copy_game_files (WaterBox)

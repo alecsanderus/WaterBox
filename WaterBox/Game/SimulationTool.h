@@ -27,7 +27,10 @@ public:
 	void SetTool(int ID);
 
 	void Tick();
-	
+
+	[[nodiscard]] int GetGameViewType() const;
+	void SetGameViewType(int Type);
+	void IncreaseGameViewType();
 
 private:
 
@@ -36,11 +39,14 @@ private:
 	void ProcessScrollEvent(int val);
 
 
-	int SelectedMaterial;
+	int SelectedMaterial = 0;
 	uint8_t Diameter = 0;
 
 	ToolType TecTool = ToolType::Draw;
-	class GameSimulation* Sim;
+	class GameSimulation* Sim = nullptr;
+
+	int GameViewType = 0;
+	int MaxGameViewType = 2;
 
 
 	template <typename Func>

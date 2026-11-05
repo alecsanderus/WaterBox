@@ -16,4 +16,5 @@ protected:
     class VerticalBoxWidget* MainVerticalBox = nullptr;
     ToolWidget* PaintButton;
     ToolWidget* ThrowButton;
+    class ChangeViewWidget *ChangeViewButton;
 };
