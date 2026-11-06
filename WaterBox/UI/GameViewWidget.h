@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseWidget.h"
+#include "ColorContainer.h"
 
 class GameViewWidget : public BaseWidget
 {
@@ -22,4 +23,6 @@ protected:
 
 	size_t SizeX = 0, SizeY = 0;
 	int OldX = -1, OldY = -1;
+
+	static inline ColorStr PressureToColor(float pressure, float maxDisplayPressure = 2000000.f);
 };

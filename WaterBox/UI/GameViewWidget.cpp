@@ -73,10 +73,14 @@ void GameViewWidget::UpdateTexture()
 
             case 2: {
                 const auto& gg = Grid[tec];
+                ColorStr color = {0,0,0,255};
+                if (gg.Active)
+                    color = PressureToColor (gg.Pressure);
+
                 Pixels[tec] =
-                    (static_cast<uint32_t>(gg.Pressure / 2000) << 24) |
-                    (static_cast<uint32_t>(170) << 16) |
-                    (static_cast<uint32_t>(170) << 8) |
+                    (static_cast<uint32_t>(color.r) << 24) |
+                    (static_cast<uint32_t>(color.g) << 16) |
+                    (static_cast<uint32_t>(color.b) << 8) |
                     static_cast<uint32_t>(255);
                 break;
             }
@@ -207,3 +211,64 @@ void GameViewWidget::CreateTexture(size_t X, size_t Y)
         throw std::runtime_error(SDL_GetError());
     }
 }
+
+
+
+inline ColorStr GameViewWidget::PressureToColor(const float pressure, const float maxDisplayPressure)
+{
+    if (!(pressure > 0.f)) return { 0, 0, 0, 255 };
+
+
+    if (pressure >= maxDisplayPressure) return { 255, 0, 0, 255 };
+
+    const float scale = maxDisplayPressure * 0.25f;
+
+    float t;
+
+    if (pressure <= scale)
+    {
+        float x = pressure / scale;
+        t = 1.25f * x / (1.f + x);
+    }
+    else
+    {
+        float x = scale / pressure;
+        t = 1.25f / (1.f + x);
+    }
+
+    constexpr uint8_t R[5] = { 0,   0,   0, 255, 255 };
+    constexpr uint8_t G[5] = { 0,  64, 255, 220,   0 };
+    constexpr uint8_t B[5] = { 32, 255, 160,   0,   0 };
+
+    float scaled = t * 4.f;
+
+    int index = static_cast<int>(scaled);
+
+    float blend;
+
+    if (index >= 4)
+    {
+        index = 3;
+        blend = 1.f;
+    }
+    else
+        blend = scaled - index;
+
+
+    auto lerp = [blend](uint8_t a, uint8_t b)
+    {
+        return static_cast<uint8_t>(
+            static_cast<float>(a) +
+            (static_cast<float>(b) - static_cast<float>(a))
+            * blend + 0.5f
+        );
+    };
+
+    return {
+        lerp(R[index], R[index + 1]),
+        lerp(G[index], G[index + 1]),
+        lerp(B[index], B[index + 1]),
+        255
+    };
+}
+

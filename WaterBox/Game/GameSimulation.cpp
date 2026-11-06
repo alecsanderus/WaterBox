@@ -280,7 +280,7 @@ void GameSimulation::ProcessLiquidPhysic() {
             GameCell& tecB = GameField(x + step, y);
             auto& matB = config.Materials.GetElement(tecB.OriginalMaterialID);
 
-            if (matB.StateCategory != StateCategoryEnum::liquid) continue;
+            if (matB.StateCategory != StateCategoryEnum::liquid || !tecB.Active) continue;
 
             float diff = tec.Pressure - tecB.Pressure;
             diff *= static_cast<float> (step);
@@ -288,8 +288,8 @@ void GameSimulation::ProcessLiquidPhysic() {
             tec.Pressure = std::max (tecB.Pressure, tec.Pressure);
             tecB.Pressure = std::max (tecB.Pressure, tec.Pressure);
 
-           // tec.VelX += diff * 0.001f;
-          //  tecB.VelX += diff * 0.001f;
+            tec.VelX += diff * 0.0001f;
+            tecB.VelX += diff * 0.0001f;
         }
     }
 
@@ -323,8 +323,8 @@ void GameSimulation::ProcessLiquidPhysic() {
 
 
 
-         //   tec.VelY += diff;
-         //   tecB.VelY += diff;
+      //      tec.VelY += diff * 0.0001f;
+     //       tecB.VelY += diff * 0.0001f;
         }
     }
 }
